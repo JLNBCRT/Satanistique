@@ -5,6 +5,7 @@ library(latex2exp)
 library(ggpubr)
 library(mvtnorm)
 library(ggExtra)
+library(plot3D)
 
 # Define UI for application that draws a histogram
 shinyUI(fluidPage(theme = shinytheme("cerulean"),
@@ -507,12 +508,12 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                                                      sliderInput("MarginalXPanel",
                                                                  "Dispersion de la variable aléatoire X (écart-type):",
                                                                  value = 3,
-                                                                 min   = 1,
+                                                                 min   = 3,
                                                                  max   = 3,
                                                                  step  = 0.25),
                                                      sliderInput("MarginalYPanel",
                                                                  "Dispersion de la variable aléatoire Y (écart-type):",
-                                                                 value = 3,
+                                                                 value = 1,
                                                                  min   = 1,
                                                                  max   = 3,
                                                                  step  = 0.25)
@@ -522,11 +523,274 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                                                                                  height = "475px"))
                                                    ))
                                         ),
-                                        tabPanel("Covariance et corrélation")),
+                                        tabPanel("Covariance et corrélation",
+                                                 fluidRow(column(width=1, icon("hand-point-right","fa-5x"),align="center"),
+                                                          column(
+                                                            h3(p(strong("Covariance et corrélation"),style="color:black;text-align:center")),
+                                                            width=10,style="background-color:lightgrey;border-radius: 10px"),
+                                                          column(width=1, icon("hand-point-left","fa-5x"),align="center")),
+                                                 fluidRow(column(width = 1),
+                                                          column(width=10,
+                                                                 p("Le coefficient de corrélation permet de quantifier, comme son nom l'indique, le niveau de corrélation entre deux variables. C'est un
+                                                                 paramètre normalisé, compris entre -1 et +1.
+                                                                   Techniquement, il est calculé à partir de la covariance, qui est le terme qui apparaît sur les termes extra-diagonaux de la matrice
+                                                                   de variance-covariance. La covariance entre deux variables aléatoires X et Y est donnée par:",
+                                                                   style="text-align:justify;color:black;background-color:lightblue;font-size:18px"),
+                                                                 withMathJax(),
+                                                                 p('$$cov\\left(X, Y\\right) = \\mathbb{E}[(X-\\mathbb{E}[X])(Y-\\mathbb{E}[Y])]
+                                                                    \\longrightarrow
+                                                                    \\overline{cov}\\left(X, Y\\right) = \\frac{1}{n-1}\\sum_{i=1}^n \\left(X_i-\\mu_X\\right)\\left(Y_i-\\mu_Y\\right)
+                                                                   $$',
+                                                                   style="color:black;border:1px solid white;background-color:white;border-radius: 10px;font-size:18px"),
+                                                                 p("A partir de cette définition, on voit immédiatement que Cov(X,X)=Var(X). Il existe de nombreuses autres propriétés de la
+                                                                   covariance, que nous n'aborderons pas ici. A partir de cette expression, on définit la corrélation par simple normalisation:",
+                                                                   style="text-align:justify;color:black;background-color:lightblue;font-size:18px"),
+                                                                 withMathJax(),
+                                                                 p('$$cor\\left(X, Y\\right) = \\frac{\\mathbb{E}[(X-\\mathbb{E}[X])(Y-\\mathbb{E}[Y])]}{\\sqrt{Var\\left(X\\right)Var\\left(Y\\right)}}$$',
+                                                                   style="color:black;border:1px solid white;background-color:white;border-radius: 10px;font-size:18px"),
+                                                                 p("On peut sans doute ici rappeler le dogme: corrélation n'est pas causalité... Attention à l'interprétation de ces paramètres!",
+                                                                   style="text-align:justify;color:black;background-color:lightblue;font-size:18px"),
+                                                                 style="background-color:lightblue;border-radius: 10px")),
+                                                 br(),
+                                                 tabsetPanel(
+                                                   tabPanel("Rotation", 
+                                                            sidebarLayout(
+                                                              sidebarPanel(
+                                                                p("Essayons: ici, on fait varier la corrélation entre les deux variables X et Y, mais de manière indirecte: 
+                                                       on jour en fait sur l'angle de rotation appliquée aux observations initiales...",
+                                                                  style="text-align:justify;color:black;font-size:18px"),
+                                                                br(),
+                                                                sliderInput("CorAnglePanel",
+                                                                            "Angle de rotation:",
+                                                                            value = 0,
+                                                                            min   = 0,
+                                                                            max   = 360,
+                                                                            step  = 5),
+                                                                sliderInput("CorXPanel",
+                                                                            "Dispersion de la variable aléatoire X (écart-type):",
+                                                                            value = 3,
+                                                                            min   = 1,
+                                                                            max   = 3,
+                                                                            step  = 0.25),
+                                                                sliderInput("CorYPanel",
+                                                                            "Dispersion de la variable aléatoire Y (écart-type):",
+                                                                            value = 1,
+                                                                            min   = 1,
+                                                                            max   = 3,
+                                                                            step  = 0.25),
+                                                                column(br(),         
+                                                                       tags$head(tags$style("#VarX{color: black;
+                                                                        font-size: 18px;
+                                                                        text-align: center;
+                                                                        }")),
+                                                                       textOutput("VarX"),
+                                                                       br(),
+                                                                       tags$head(tags$style("#VarY{color: black;
+                                                                        font-size: 18px;
+                                                                        text-align: center;
+                                                                        }")),
+                                                                       textOutput("VarY"),
+                                                                       br(),
+                                                                       tags$head(tags$style("#Cor{color: black;
+                                                                        font-size: 18px;
+                                                                        text-align: center;
+                                                                        }")),
+                                                                       textOutput("Cor"),
+                                                                       br(),
+                                                                       tags$head(tags$style("#Cov{color: black;
+                                                                        font-size: 18px;
+                                                                        text-align: center;
+                                                                        }")),
+                                                                       textOutput("Cov"),
+                                                                       br(),
+                                                                       width = 12,
+                                                                       style="background-color:papayawhip;border-left:8px solid coral;border-top:1px solid black;border-bottom:1px solid black;border-right: 1px solid black"),
+                                                                br(),
+                                                                br(),
+                                                                br(),
+                                                                br(),
+                                                                br(),
+                                                                br(),
+                                                                br(),
+                                                                br(),
+                                                                br(),
+                                                                br()
+                                                              ),
+                                                              mainPanel(
+                                                                br(),
+                                                                tabPanel("Plot", plotOutput("CorPlot",
+                                                                                            height = "600px")))
+                                                            ),           
+                                                   ),
+                                                   tabPanel("Corrélation",
+                                                            sidebarPanel(
+                                                              p("Essayons: ici, on fait directement varier la corrélation entre les deux variables X et Y, indépendamment
+                                                                des variances des variances X et Y...",
+                                                                style="text-align:justify;color:black;font-size:18px"),
+                                                              br(),
+                                                              sliderInput("CorValuePanel",
+                                                                          "Coefficient de corrélation:",
+                                                                          value = 0,
+                                                                          min   = -1,
+                                                                          max   = 1,
+                                                                          step  = 0.1),
+                                                              sliderInput("CorX2Panel",
+                                                                          "Dispersion de la variable aléatoire X (écart-type):",
+                                                                          value = 3,
+                                                                          min   = 1,
+                                                                          max   = 3,
+                                                                          step  = 0.25),
+                                                              sliderInput("CorY2Panel",
+                                                                          "Dispersion de la variable aléatoire Y (écart-type):",
+                                                                          value = 1,
+                                                                          min   = 1,
+                                                                          max   = 3,
+                                                                          step  = 0.25),
+                                                              column(br(),
+                                                                     tags$head(tags$style("#VarX2{color: black;
+                                                                        font-size: 18px;
+                                                                        text-align: center;
+                                                                        }")),
+                                                                     textOutput("VarX2"),
+                                                                     br(),
+                                                                     tags$head(tags$style("#VarY2{color: black;
+                                                                        font-size: 18px;
+                                                                        text-align: center;
+                                                                        }")),
+                                                                     textOutput("VarY2"),
+                                                                     br(),
+                                                                     tags$head(tags$style("#Cor2{color: black;
+                                                                        font-size: 18px;
+                                                                        text-align: center;
+                                                                        }")),
+                                                                     textOutput("Cor2"),
+                                                                     br(),
+                                                                     tags$head(tags$style("#Cov2{color: black;
+                                                                        font-size: 18px;
+                                                                        text-align: center;
+                                                                        }")),
+                                                                     textOutput("Cov2"),
+                                                                     br(),
+                                                                     width = 12,
+                                                                     style="background-color:papayawhip;border-left:8px solid coral;border-top:1px solid black;border-bottom:1px solid black;border-right: 1px solid black"),
+                                                              br(),
+                                                              br(),
+                                                              br(),
+                                                              br(),
+                                                              br(),
+                                                              br(),
+                                                              br(),
+                                                              br(),
+                                                              br(),
+                                                              br()
+                                                            ),
+                                                            mainPanel(
+                                                              br(),
+                                                              tabPanel("Plot", plotOutput("Cor2Plot",
+                                                                                          height = "600px")))
+                                                   )
+                                                   
+                                                 )), 
+                                        tabPanel("Au-delà de deux dimensions?",
+                                                 fluidRow(column(width=1, icon("hand-point-right","fa-5x"),align="center"),
+                                                          column(
+                                                            h3(p(strong("Au-delà de deux dimensions?"),style="color:black;text-align:center")),
+                                                            width=10,style="background-color:lightgrey;border-radius: 10px"),
+                                                          column(width=1, icon("hand-point-left","fa-5x"),align="center")),
+                                                 fluidRow(column(width = 1),
+                                                          column(width=10,
+                                                                 p("Il est possible de représenter des distributions de probabilité jointes pour des triplets 
+                                                                   de variables, sous la forme de nuages de points. On aime en général représenter les lignes
+                                                                   de niveaux des projections sur les différents plans (à trois dimensions, paires de variables
+                                                                   sont envisageables: X-Y, X-Z et Y-Z).",
+                                                                   style="text-align:justify;color:black;background-color:lightblue;font-size:18px"),
+                                                                 style="background-color:lightblue;border-radius: 10px")),
+                                                 br(),
+                                                 sidebarLayout(
+                                                   sidebarPanel(
+                                                     p("Ici nous allons juste faire varier le nombre de points et l'angle de vue...",
+                                                       style="text-align:justify;color:black;font-size:18px"),
+                                                     br(),
+                                                     sliderInput("Nbpts3DPanel",
+                                                                 "Nombre de points:",
+                                                                 value = 2500,
+                                                                 min   = 1000,
+                                                                 max   = 5000,
+                                                                 step  = 100),
+                                                     br(),
+                                                     sliderInput("Theta3DPanel",
+                                                                 "Angle 1:",
+                                                                 value = 45,
+                                                                 min   = 0,
+                                                                 max   = 180,
+                                                                 step  = 5),
+                                                     br(),
+                                                     sliderInput("Phi3DPanel",
+                                                                 "Angle 2:",
+                                                                 value = 25,
+                                                                 min   = 0,
+                                                                 max   = 90,
+                                                                 step  = 5)
+                                                   ),
+                                                   mainPanel(
+                                                     tabPanel("Plot", plotOutput("D3Plot",
+                                                                                 height = "600px"))
+                                                   ))
+                                        )),
                              navbarMenu("Les principales distributions de probabilité...",
                                         tabPanel("... discrètes"),
                                         tabPanel("... continues")),
-                             tabPanel("Le théorème central limite"),
+                             tabPanel("Le théorème central limite",
+                                      fluidRow(column(width=1, icon("hand-point-right","fa-5x"),align="center"),
+                                               column(
+                                                 h3(p(strong("Le théorème central limite"),style="color:black;text-align:center")),
+                                                 width=10,style="background-color:lightgrey;border-radius: 10px"),
+                                               column(width=1, icon("hand-point-left","fa-5x"),align="center")),
+                                      fluidRow(column(width = 1),
+                                               column(width=10,
+                                                      p("blablabla",
+                                                        style="text-align:justify;color:black;background-color:lightblue;font-size:18px"),
+                                                      style="background-color:lightblue;border-radius: 10px")),
+                                      br(),
+                                      sidebarLayout(
+                                        sidebarPanel(
+                                          p("Ici, on se propose de choisir la distribution sous-jacente, son espérance et sa variance,
+                                            ainsi que le nombre de points dans l'échantillon et le nombre d'échantillons...",
+                                            style="text-align:justify;color:black;font-size:18px"),
+                                          br(),
+                                          radioButtons("dist", 
+                                                       "Distribution de la variable aléatoire:",
+                                                       c("Normal"      = "norm",
+                                                         "Log-normal"  = "lnorm",
+                                                         "Gamma"       = "gamma")),
+                                          sliderInput("TCLmeanPanel",
+                                                      "Espérance de la variable aléatoire:",
+                                                      value = 2,
+                                                      min   = 1,
+                                                      max   = 10,
+                                                      step  = 0.5),
+                                          sliderInput("TCLsdPanel",
+                                                      "Variance de la variable aléatoire:",
+                                                      value = 1,
+                                                      min   = 1,
+                                                      max   = 5,
+                                                      step  = 0.5),
+                                          sliderInput("TCLNsample",
+                                                      "Nombre de points dans chaque échantillon:",
+                                                      value = 10,
+                                                      min   = 10,
+                                                      max   = 5000,
+                                                      step  = 10),
+                                          sliderInput("TCLNhist",
+                                                      "Nombre d'échantillons:",
+                                                      value = 100,
+                                                      min   = 100,
+                                                      max   = 5000,
+                                                      step  = 100)
+                                        ),
+                                        mainPanel(
+                                          tabPanel("Plot", plotOutput("TCL",
+                                                                      height = "700px"))))),
                              navbarMenu("Modélisation",
                                         tabPanel("Le maximum de vraisemblance"),
                                         tabPanel("Régression linéaire",
@@ -542,7 +806,7 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                                                  fluidRow(column(tags$img(src = "Work_in_progress.jpg", width = "600px"),
                                                                  width = 12,
                                                                  style="display: block; margin-left: auto; margin-right: auto", align = "center"))
-                                        ),
+                                        )
                                         
                              ),
                              tabPanel("Quelques références et liens utiles...",

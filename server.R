@@ -5,6 +5,9 @@ library(latex2exp)
 library(ggpubr)
 library(mvtnorm)
 library(ggExtra)
+library(plot3D)
+
+source("Functions.R")
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
@@ -294,7 +297,7 @@ shinyServer(function(input, output) {
             axis.title.x = element_text(size = 20),
             axis.title.y = element_text(size = 20),
             legend.text  = element_text(size = 16))
-
+    
     h <- ggplot(df) +
       geom_point(    aes(x = x,       y = 0,     color = "Data"),      size = 5, alpha = 0.5, shape = 3) +
       geom_histogram(aes(x = x, y = ..density.., color = "Data"),                alpha = 0.2, show.legend = F, bins = 30, center = -1) +
@@ -326,7 +329,7 @@ shinyServer(function(input, output) {
             axis.title.x = element_text(size = 20),
             axis.title.y = element_text(size = 20),
             legend.text  = element_text(size = 16))
-
+    
     ggarrange(g, h, legend = F, align = "hv")
   })
   
@@ -344,7 +347,7 @@ shinyServer(function(input, output) {
   
   output$MarginalPlot <- renderPlot({
     # lim        <- 5*max(VariableMargX(), VariableMargY()) 
-    lim        <- 5*3 
+    lim        <- 5*2 
     nsample    <- VariableMargNsample()
     Sigma      <- diag(c(VariableMargX()^2, VariableMargY()^2))
     df3        <- as.data.frame(rmvnorm(nsample, mean = c(0, 0), sigma = Sigma))
@@ -385,6 +388,383 @@ shinyServer(function(input, output) {
                      yparams = list(breaks = seq(-5*max(VariableMargX(), VariableMargY()), 5*max(VariableMargX(), VariableMargY()), 1.25), alpha = 0.75))
     
     ggarrange(im, jm, align = "hv", ncol = 2)
+  })
+  
+  VariableCorAngle <- reactive({
+    input$CorAnglePanel*2*pi/360
+  })
+  
+  VariableCorX <- reactive({
+    input$CorXPanel
+  })
+  
+  VariableCorY <- reactive({
+    input$CorYPanel
+  })
+  
+  output$Cov <- renderText({
+    
+    nsample    <- 1e3
+    Sigma      <- diag(c(VariableCorX()^2, VariableCorY()^2))
+    theta <- VariableCorAngle()
+    rot <- matrix(data = c(cos(theta), -sin(theta),
+                           sin(theta),  cos(theta)), ncol = 2)
+    Sigma <- t(rot) %*% Sigma %*% rot
+    df3        <- as.data.frame(rmvnorm(nsample, mean = c(0, 0), sigma = Sigma))
+    
+    cov_txt <- paste0("La covariance vaut: ", round(cov(df3)[1,2],3), " (théorie: ", round(Sigma[1,2],3), ")")
+    cov_txt
+    
+  })
+  
+  output$VarX <- renderText({
+    
+    nsample    <- 1e3
+    Sigma      <- diag(c(VariableCorX()^2, VariableCorY()^2))
+    theta <- VariableCorAngle()
+    rot <- matrix(data = c(cos(theta), -sin(theta),
+                           sin(theta),  cos(theta)), ncol = 2)
+    Sigma <- t(rot) %*% Sigma %*% rot
+    df3        <- as.data.frame(rmvnorm(nsample, mean = c(0, 0), sigma = Sigma))
+    
+    VarX_txt <- paste0("La variance en X vaut : ", round(var(df3[,1]),3), " (théorie: ", round(Sigma[1,1],3), ")")
+    VarX_txt
+    
+  })
+  
+  output$VarY <- renderText({
+    
+    nsample    <- 1e3
+    Sigma      <- diag(c(VariableCorX()^2, VariableCorY()^2))
+    theta <- VariableCorAngle()
+    rot <- matrix(data = c(cos(theta), -sin(theta),
+                           sin(theta),  cos(theta)), ncol = 2)
+    Sigma <- t(rot) %*% Sigma %*% rot
+    df3        <- as.data.frame(rmvnorm(nsample, mean = c(0, 0), sigma = Sigma))
+    
+    VarX_txt <- paste0("La variance en Y vaut : ", round(var(df3[,2]),3), " (théorie: ", round(Sigma[2,2],3), ")")
+    VarX_txt
+    
+  })
+  
+  output$Cor <- renderText({
+    
+    nsample    <- 1e3
+    Sigma      <- diag(c(VariableCorX()^2, VariableCorY()^2))
+    theta <- VariableCorAngle()
+    rot <- matrix(data = c(cos(theta), -sin(theta),
+                           sin(theta),  cos(theta)), ncol = 2)
+    Sigma <- t(rot) %*% Sigma %*% rot
+    df3        <- as.data.frame(rmvnorm(nsample, mean = c(0, 0), sigma = Sigma))
+    
+    cor_txt <- paste0("Le coefficient de corrélation vaut: ", round(cor(df3)[1,2],3), " (théorie: ", round(Sigma[1,2]/sqrt(Sigma[1,1]*Sigma[2,2]),3), ")")
+    cor_txt
+    
+  })
+  
+  output$CorPlot <- renderPlot({
+    # lim        <- 5*max(VariableMargX(), VariableMargY()) 
+    lim        <- 5*2 
+    nsample    <- 1e3
+    Sigma      <- diag(c(VariableCorX()^2, VariableCorY()^2))
+    theta <- VariableCorAngle()
+    rot <- matrix(data = c(cos(theta), -sin(theta),
+                           sin(theta),  cos(theta)), ncol = 2)
+    Sigma <- t(rot) %*% Sigma %*% rot
+    df3        <- as.data.frame(rmvnorm(nsample, mean = c(0, 0), sigma = Sigma))
+    names(df3) <- c("X", "Y")
+    i <- ggplot(df3) +
+      geom_point(aes(x = X, y = Y), size = 5, alpha = 0.5) +
+      geom_density_2d(aes(x = X, y = Y), color = "blue") +
+      xlim(c(-lim, lim)) +
+      ylim(c(-lim, lim)) +
+      coord_equal() +
+      theme_bw() +
+      theme(axis.text.x  = element_text(size = 16),
+            axis.text.y  = element_text(size = 16),
+            axis.title.x = element_text(size = 20),
+            axis.title.y = element_text(size = 20),
+            legend.text  = element_text(size = 16))
+    im <- ggMarginal(i, type = "histogram", color = "darkgrey", fill = "black", 
+                     xparams = list(breaks = seq(-5*max(VariableCorX(), VariableCorY()), 5*max(VariableCorX(), VariableCorY()), 1.25), alpha = 0.75), 
+                     yparams = list(breaks = seq(-5*max(VariableCorX(), VariableCorY()), 5*max(VariableCorX(), VariableCorY()), 1.25), alpha = 0.75))
+    j <- ggplot(df3) +
+      geom_point(aes(x = X, y = Y), size = 0.1, alpha = 0.5) +
+      geom_density_2d_filled(aes(x = X, y = Y), size = 1, show.legend = F) +
+      xlim(c(-lim, lim)) +
+      ylim(c(-lim, lim)) +
+      coord_equal() +
+      theme_bw() +
+      theme(axis.text.x  = element_text(size = 16),
+            axis.text.y  = element_text(size = 16),
+            axis.title.x = element_text(size = 20),
+            axis.title.y = element_text(size = 20),
+            legend.text  = element_text(size = 16))
+    
+    im <- ggMarginal(i, type = "histogram", color = "darkgrey", fill = "black", 
+                     xparams = list(breaks = seq(-5*max(VariableCorX(), VariableCorY()), 5*max(VariableCorX(), VariableCorY()), 1.25), alpha = 0.75), 
+                     yparams = list(breaks = seq(-5*max(VariableCorX(), VariableCorY()), 5*max(VariableCorX(), VariableCorY()), 1.25), alpha = 0.75))
+    jm <- ggMarginal(j, type = "histogram", color = "darkgrey", fill = "black", 
+                     xparams = list(breaks = seq(-5*max(VariableCorX(), VariableCorY()), 5*max(VariableCorX(), VariableCorY()), 1.25), alpha = 0.75), 
+                     yparams = list(breaks = seq(-5*max(VariableCorX(), VariableCorY()), 5*max(VariableCorX(), VariableCorY()), 1.25), alpha = 0.75))
+    
+    ggarrange(im, jm, align = "hv", ncol = 2)
+  })
+  
+  VariableCorValue <- reactive({
+    input$CorValuePanel
+  })
+  
+  VariableCorX2 <- reactive({
+    input$CorX2Panel
+  })
+  
+  VariableCorY2 <- reactive({
+    input$CorY2Panel
+  })
+  
+  output$Cov2 <- renderText({
+    
+    nsample    <- 1e3
+    Sigma      <- diag(c(VariableCorX()^2, VariableCorY()^2))
+    Sigma[1,2] <- VariableCorValue()*sqrt(VariableCorX2()^2* VariableCorY2()^2)
+    Sigma[2,1] <- VariableCorValue()*sqrt(VariableCorX2()^2* VariableCorY2()^2)
+    df3        <- as.data.frame(rmvnorm(nsample, mean = c(0, 0), sigma = Sigma))
+    
+    cov_txt <- paste0("La covariance vaut: ", round(cov(df3)[1,2],3), " (théorie: ", round(Sigma[1,2],3), ")")
+    cov_txt
+    
+  })
+  
+  output$VarX2 <- renderText({
+    
+    nsample    <- 1e3
+    Sigma      <- diag(c(VariableCorX()^2, VariableCorY()^2))
+    Sigma[1,2] <- VariableCorValue()*sqrt(VariableCorX2()^2* VariableCorY2()^2)
+    Sigma[2,1] <- VariableCorValue()*sqrt(VariableCorX2()^2* VariableCorY2()^2)
+    df3        <- as.data.frame(rmvnorm(nsample, mean = c(0, 0), sigma = Sigma))
+    
+    VarX_txt <- paste0("La variance en X vaut : ", round(var(df3[,1]),3), " (théorie: ", round(Sigma[1,1],3), ")")
+    VarX_txt
+    
+  })
+  
+  output$VarY2 <- renderText({
+    
+    nsample    <- 1e3
+    Sigma      <- diag(c(VariableCorX()^2, VariableCorY()^2))
+    Sigma[1,2] <- VariableCorValue()*sqrt(VariableCorX2()^2* VariableCorY2()^2)
+    Sigma[2,1] <- VariableCorValue()*sqrt(VariableCorX2()^2* VariableCorY2()^2)
+    df3        <- as.data.frame(rmvnorm(nsample, mean = c(0, 0), sigma = Sigma))
+    
+    VarX_txt <- paste0("La variance en Y vaut : ", round(var(df3[,2]),3), " (théorie: ", round(Sigma[2,2],3), ")")
+    VarX_txt
+    
+  })
+  
+  output$Cor2 <- renderText({
+    
+    nsample    <- 1e3
+    Sigma      <- diag(c(VariableCorX()^2, VariableCorY()^2))
+    Sigma[1,2] <- VariableCorValue()*sqrt(VariableCorX2()^2* VariableCorY2()^2)
+    Sigma[2,1] <- VariableCorValue()*sqrt(VariableCorX2()^2* VariableCorY2()^2)
+    df3        <- as.data.frame(rmvnorm(nsample, mean = c(0, 0), sigma = Sigma))
+    
+    cor_txt <- paste0("Le coefficient de corrélation vaut: ", round(cor(df3)[1,2],3), " (théorie: ", round(Sigma[1,2]/sqrt(Sigma[1,1]*Sigma[2,2]),3), ")")
+    cor_txt
+    
+  })
+  
+  output$Cor2Plot <- renderPlot({
+    # lim        <- 5*max(VariableMargX(), VariableMargY()) 
+    lim        <- 5*2 
+    nsample    <- 1e3
+    Sigma      <- diag(c(VariableCorX2()^2, VariableCorY2()^2))
+    Sigma[1,2] <- VariableCorValue()*sqrt(VariableCorX2()^2* VariableCorY2()^2)
+    Sigma[2,1] <- VariableCorValue()*sqrt(VariableCorX2()^2* VariableCorY2()^2)
+    df3        <- as.data.frame(rmvnorm(nsample, mean = c(0, 0), sigma = Sigma))
+    names(df3) <- c("X", "Y")
+    i <- ggplot(df3) +
+      geom_point(aes(x = X, y = Y), size = 5, alpha = 0.5) +
+      geom_density_2d(aes(x = X, y = Y), color = "blue") +
+      xlim(c(-lim, lim)) +
+      ylim(c(-lim, lim)) +
+      coord_equal() +
+      theme_bw() +
+      theme(axis.text.x  = element_text(size = 16),
+            axis.text.y  = element_text(size = 16),
+            axis.title.x = element_text(size = 20),
+            axis.title.y = element_text(size = 20),
+            legend.text  = element_text(size = 16))
+    im <- ggMarginal(i, type = "histogram", color = "darkgrey", fill = "black", 
+                     xparams = list(breaks = seq(-5*max(VariableCorX(), VariableCorY()), 5*max(VariableCorX(), VariableCorY()), 1.25), alpha = 0.75), 
+                     yparams = list(breaks = seq(-5*max(VariableCorX(), VariableCorY()), 5*max(VariableCorX(), VariableCorY()), 1.25), alpha = 0.75))
+    j <- ggplot(df3) +
+      geom_point(aes(x = X, y = Y), size = 0.1, alpha = 0.5) +
+      geom_density_2d_filled(aes(x = X, y = Y), size = 1, show.legend = F) +
+      xlim(c(-lim, lim)) +
+      ylim(c(-lim, lim)) +
+      coord_equal() +
+      theme_bw() +
+      theme(axis.text.x  = element_text(size = 16),
+            axis.text.y  = element_text(size = 16),
+            axis.title.x = element_text(size = 20),
+            axis.title.y = element_text(size = 20),
+            legend.text  = element_text(size = 16))
+    
+    im <- ggMarginal(i, type = "histogram", color = "darkgrey", fill = "black", 
+                     xparams = list(breaks = seq(-5*max(VariableCorX(), VariableCorY()), 5*max(VariableCorX(), VariableCorY()), 1.25), alpha = 0.75), 
+                     yparams = list(breaks = seq(-5*max(VariableCorX(), VariableCorY()), 5*max(VariableCorX(), VariableCorY()), 1.25), alpha = 0.75))
+    jm <- ggMarginal(j, type = "histogram", color = "darkgrey", fill = "black", 
+                     xparams = list(breaks = seq(-5*max(VariableCorX(), VariableCorY()), 5*max(VariableCorX(), VariableCorY()), 1.25), alpha = 0.75), 
+                     yparams = list(breaks = seq(-5*max(VariableCorX(), VariableCorY()), 5*max(VariableCorX(), VariableCorY()), 1.25), alpha = 0.75))
+    
+    ggarrange(im, jm, align = "hv", ncol = 2)
+  })
+  
+  Variable3DNpts <- reactive({
+    input$Nbpts3DPanel
+  })
+  
+  Variable3DTheta <- reactive({
+    input$Theta3DPanel
+  })
+  
+  Variable3DPhi <- reactive({
+    input$Phi3DPanel
+  })
+  
+  output$D3Plot <- renderPlot({
+    
+    nsample <- Variable3DNpts()
+    
+    Sigma <- matrix(data = c( 1, -1, 0,
+                              -1,  2, 0,
+                              0,  0, 3), ncol = 3, byrow = T)
+    df3d <- as.data.frame(rmvnorm(nsample, mean = rep(0, 3), sigma = Sigma))
+    names(df3d) <- paste0("X", 1:3)
+    df3d$`Distance from origin` <- sqrt(df3d$X1^2+df3d$X2^2+df3d$X3^2)
+    lim <- 5
+    scatter3D_fancy(x = df3d$X1, y = df3d$X2, z = df3d$X3,
+                    posx = -lim, posy = lim, posz = -lim,
+                    colvar = df3d$`Distance from origin`, 
+                    theta = Variable3DTheta(), phi = Variable3DPhi(),
+                    main = "Distribution gaussienne 3D",  clab = c("Distance from", "origin"),
+                    xlim = c(-lim, lim),
+                    ylim = c(-lim, lim),
+                    zlim = c(-lim, lim))
+  })
+  
+  VariableTCLmean <- reactive({
+    input$TCLmeanPanel
+  })
+  
+  VariableTCLsd <- reactive({
+    input$TCLsdPanel
+  })
+  
+  VariableTCLNsample <- reactive({
+    input$TCLNsample
+  })
+  
+  VariableTCLNhist <- reactive({
+    input$TCLNhist
+  })
+  
+  VariableTCLDist <- reactive({
+    switch(input$dist,
+           norm  = "norm",
+#           unif  = "unif",
+           lnorm = "lnorm",
+           gamma = "gamma",
+#           beta  = "beta",
+           rnorm)
+  })
+  
+  output$TCL <- renderPlot({
+    
+    dist <- VariableTCLDist()
+    
+    nsample <- VariableTCLNsample()
+    nhist   <- VariableTCLNhist()
+    
+    ns <- data.frame(nsample = rep(nsample, nhist))
+    
+    if (dist == "norm") {
+      sigma <- VariableTCLsd()
+      mu    <- VariableTCLmean()
+      data  <- data.frame(distrib = rnorm(nsample, mean = mu, sd = sigma))
+    }
+    
+    # if (dist == "unif") {
+    #   max   <- 3*VariableTCLsd()^2/VariableTCLmean()+VariableTCLmean()
+    #   min   <- 2*VariableTCLmean()-max
+    #   data  <- data.frame(distrib = runif(nsample, min = min, max = max))
+    # }
+    
+    if (dist == "lnorm") {
+      sigma <- sqrt(log((VariableTCLsd()/VariableTCLmean())^2+1))
+      mu    <- log(VariableTCLmean()) - VariableTCLsd()^2/2
+      data  <- data.frame(distrib = rlnorm(nsample, meanlog = mu, sdlog = sigma))
+    }
+    
+    if (dist == "gamma") {
+      shape <- VariableTCLmean()^2/VariableTCLsd()^2
+      scale <- VariableTCLsd()^2/VariableTCLmean()
+      data  <- data.frame(distrib = rgamma(nsample, shape = shape, scale = scale))
+    }
+    
+    # if (dist == "beta") {
+    #   shape1 <- (1-VariableTCLmean())*VariableTCLmean()^2/VariableTCLsd()^2-VariableTCLmean()
+    #   shape2 <- shape1*(1-VariableTCLmean())/VariableTCLmean()
+    #   data  <- data.frame(distrib = rbeta(nsample, shape1 = shape1, shape2 = shape2))
+    # }
+    
+    df <- data.frame((apply(ns, 
+                            FUN = TCL, 
+                            MARGIN = 1, 
+                            E = VariableTCLmean(), 
+                            SD = VariableTCLsd(), 
+                            fun = dist) - VariableTCLmean())/(VariableTCLsd()/sqrt(VariableTCLNsample())))
+    names(df) <- "Xred"
+    
+    g <- ggplot(data) +
+      geom_histogram(aes(x = distrib, y = ..density..), alpha = 0.2, show.legend = F, bins = 30, center = -1) +
+      xlab("Variable aléatoire (un échantillon)") +
+      ylab("Densité de probabilité") +
+      theme_bw() +
+      theme(axis.text.x  = element_text(size = 16),
+            axis.text.y  = element_text(size = 16),
+            axis.title.x = element_text(size = 20),
+            axis.title.y = element_text(size = 20),
+            legend.text  = element_text(size = 16))
+    
+    h <- ggplot(df) +
+      geom_histogram(aes(x = Xred, y = ..density..), alpha = 0.2, show.legend = F, bins = 30, center = -1) +
+      stat_function(fun = dnorm, color = "blue", size = 1.2) +
+      xlab("Variable aléatoire réduite") +
+      ylab("Densité de probabilité") +
+      theme_bw() +
+      theme(axis.text.x  = element_text(size = 16),
+            axis.text.y  = element_text(size = 16),
+            axis.title.x = element_text(size = 20),
+            axis.title.y = element_text(size = 20),
+            legend.text  = element_text(size = 16))
+    
+    i <- ggplot(df) +
+      stat_ecdf(aes(x = Xred), size = 1.2, show.legend = F, bins = 30, center = -1) +
+      stat_function(fun = pnorm, color = "blue", size = 1.2) +
+      xlab("Variable aléatoire réduite") +
+      ylab("Fonction de répartition") +
+      theme_bw() +
+      theme(axis.text.x  = element_text(size = 16),
+            axis.text.y  = element_text(size = 16),
+            axis.title.x = element_text(size = 20),
+            axis.title.y = element_text(size = 20),
+            legend.text  = element_text(size = 16))   
+    
+    ggarrange(g, h, i, ncol = 3, align = "hv")
+    
   })
   
 })
