@@ -79,7 +79,7 @@ shinyServer(function(input, output) {
                          values = c("Data"      = "black",
                                     "Moyenne"   = "red",
                                     "Espérance" = "blue")) +
-      ylim(c(0,0.5)) +
+      ylim(c(0,0.75)) +
       theme_minimal() +
       theme(axis.text.x  = element_text(size = 16),
             axis.text.y  = element_text(size = 16),
@@ -140,7 +140,7 @@ shinyServer(function(input, output) {
                                     "Moyenne"   = "red",
                                     "Espérance" = "blue")) +
       xlim(c(-3,3)) +
-      ylim(c(0,0.5)) +
+      ylim(c(0,0.75)) +
       theme_minimal() +
       theme(axis.text.x  = element_text(size = 16),
             axis.text.y  = element_text(size = 16),
@@ -210,7 +210,7 @@ shinyServer(function(input, output) {
                                     "Moyenne"   = "red",
                                     "Espérance" = "blue")) +
       xlim(c(-3,3)) +
-      ylim(c(0,0.5)) +
+      ylim(c(0,0.6)) +
       theme_minimal() +
       theme(axis.text.x  = element_text(size = 16),
             axis.text.y  = element_text(size = 16),

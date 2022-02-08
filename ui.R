@@ -97,7 +97,7 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                                                                  br(),
                                                                  br(),
                                                                  withMathJax(),
-                                                                 p("Dans le cas de figure ci-dessus, une question s'impose à nous: qui, du mystérieux vengeur
+                                                                 p("Dans le cas de figure ci-dessus, une question s'impose à nous: qui, du revanchard
                                                                    Charles Bronson ou du cruel Henry Fonda, tirera le premier? La situation est complexe: l'instant
                                                                    du premier tir est conditionné par de nombreuses variables (la date du dernier rendez-vous avec
                                                                    Claudia Cardinale, la survenue éventuelle d'un orage dans la vallée voisine, bref, la position de
@@ -508,7 +508,7 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                                                      sliderInput("MarginalXPanel",
                                                                  "Dispersion de la variable aléatoire X (écart-type):",
                                                                  value = 3,
-                                                                 min   = 3,
+                                                                 min   = 1,
                                                                  max   = 3,
                                                                  step  = 0.25),
                                                      sliderInput("MarginalYPanel",
