@@ -3,6 +3,8 @@ library(shinythemes)
 library(tidyverse)
 library(latex2exp)
 library(ggpubr)
+library(mvtnorm)
+library(ggExtra)
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
@@ -276,7 +278,7 @@ shinyServer(function(input, output) {
       geom_point(    aes(x = x,       y = 0,     color = "Data"),      size = 5, alpha = 0.5, shape = 3) +
       geom_histogram(aes(x = x, y = ..density.., color = "Data"),                alpha = 0.2, show.legend = F, bins = 30, center = -1) +
       geom_line(data = df2, aes(x = x, y = y), color = "blue", size = 1.5) +
-      geom_area(data = df2[df2$x<VariableVar() & df2$x>-VariableVar(),], aes(x = x, y = y), fill = "orange", alpha = 0.25, size = 1.5) +
+      geom_area(data = df2[df2$x<VariableSD()*VariableVar() & df2$x>-VariableSD()*VariableVar(),], aes(x = x, y = y), fill = "orange", alpha = 0.25, size = 1.5) +
       geom_line(data = df2, aes(x = x, y = y), color = "blue", size = 1.5) +
       xlab("x") +
       ylab("Densité de probabilité") +
@@ -301,6 +303,12 @@ shinyServer(function(input, output) {
       geom_line(data = df2, aes(x = x, y = y), color = "blue", size = 1.5) +
       annotate(geom  = "text",
                x     = 0,
+               y     = 1.5/sqrt(2*pi*VariableVar()^2),
+               label = "(zoom sur l'IC à 99%)", 
+               color = "black",
+               size  = 10) +
+      annotate(geom  = "text",
+               x     = 0,
                y     = .5/sqrt(2*pi*VariableVar()^2),
                label = paste0(round(100*pnorm(VariableSD()*VariableVar(), mean = 0, sd = VariableVar())-100*pnorm(-VariableSD()*VariableVar(), mean = 0, sd = VariableVar()), 1), " %"), 
                color = "orangered4",
@@ -320,6 +328,63 @@ shinyServer(function(input, output) {
             legend.text  = element_text(size = 16))
 
     ggarrange(g, h, legend = F, align = "hv")
+  })
+  
+  VariableMargNsample <- reactive({
+    input$MarginalNsamplePanel
+  })
+  
+  VariableMargX <- reactive({
+    input$MarginalXPanel
+  })
+  
+  VariableMargY <- reactive({
+    input$MarginalYPanel
+  })
+  
+  output$MarginalPlot <- renderPlot({
+    # lim        <- 5*max(VariableMargX(), VariableMargY()) 
+    lim        <- 5*3 
+    nsample    <- VariableMargNsample()
+    Sigma      <- diag(c(VariableMargX()^2, VariableMargY()^2))
+    df3        <- as.data.frame(rmvnorm(nsample, mean = c(0, 0), sigma = Sigma))
+    names(df3) <- c("X", "Y")
+    i <- ggplot(df3) +
+      geom_point(aes(x = X, y = Y), size = 5, alpha = 0.5) +
+      geom_density_2d(aes(x = X, y = Y), color = "blue") +
+      xlim(c(-lim, lim)) +
+      ylim(c(-lim, lim)) +
+      coord_equal() +
+      theme_bw() +
+      theme(axis.text.x  = element_text(size = 16),
+            axis.text.y  = element_text(size = 16),
+            axis.title.x = element_text(size = 20),
+            axis.title.y = element_text(size = 20),
+            legend.text  = element_text(size = 16))
+    im <- ggMarginal(i, type = "histogram", color = "darkgrey", fill = "black", 
+                     xparams = list(breaks = seq(-5*max(VariableMargX(), VariableMargY()), 5*max(VariableMargX(), VariableMargY()), 1.25), alpha = 0.75), 
+                     yparams = list(breaks = seq(-5*max(VariableMargX(), VariableMargY()), 5*max(VariableMargX(), VariableMargY()), 1.25), alpha = 0.75))
+    j <- ggplot(df3) +
+      geom_point(aes(x = X, y = Y), size = 0.1, alpha = 0.5) +
+      geom_density_2d_filled(aes(x = X, y = Y), size = 1, show.legend = F) +
+      xlim(c(-lim, lim)) +
+      ylim(c(-lim, lim)) +
+      coord_equal() +
+      theme_bw() +
+      theme(axis.text.x  = element_text(size = 16),
+            axis.text.y  = element_text(size = 16),
+            axis.title.x = element_text(size = 20),
+            axis.title.y = element_text(size = 20),
+            legend.text  = element_text(size = 16))
+    
+    im <- ggMarginal(i, type = "histogram", color = "darkgrey", fill = "black", 
+                     xparams = list(breaks = seq(-5*max(VariableMargX(), VariableMargY()), 5*max(VariableMargX(), VariableMargY()), 1.25), alpha = 0.75), 
+                     yparams = list(breaks = seq(-5*max(VariableMargX(), VariableMargY()), 5*max(VariableMargX(), VariableMargY()), 1.25), alpha = 0.75))
+    jm <- ggMarginal(j, type = "histogram", color = "darkgrey", fill = "black", 
+                     xparams = list(breaks = seq(-5*max(VariableMargX(), VariableMargY()), 5*max(VariableMargX(), VariableMargY()), 1.25), alpha = 0.75), 
+                     yparams = list(breaks = seq(-5*max(VariableMargX(), VariableMargY()), 5*max(VariableMargX(), VariableMargY()), 1.25), alpha = 0.75))
+    
+    ggarrange(im, jm, align = "hv", ncol = 2)
   })
   
 })

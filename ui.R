@@ -1,5 +1,10 @@
 library(shiny)
 library(shinythemes)
+library(tidyverse)
+library(latex2exp)
+library(ggpubr)
+library(mvtnorm)
+library(ggExtra)
 
 # Define UI for application that draws a histogram
 shinyUI(fluidPage(theme = shinytheme("cerulean"),
@@ -47,9 +52,9 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                                                    tags$ul(
                                                      tags$li("Le vocabulaire de la statistique descriptive (moyenne, médiane, histogrammes, corrélation et covariance...)"), 
                                                      tags$li("Une présentation des principales distributions de probabilité (discrètes et continues)"), 
-                                                     tags$li("Un point sur le maximum de vraisemblance, sur un cas simple"),
                                                      tags$li("Une illustration du théorème central limite"),
-                                                     tags$li("Une illustation sur une sortie de RiskSpectrum (EPS EI 1300, train P4)")
+                                                     tags$li("Une approche empirique du maximum de vraisemblance, sur un cas simple"),
+                                                     tags$li("Une présentation simple de la régression linéaire et du problème de la prévision (travail en cours)")
                                                    ),
                                                    style="text-align:justify;color:black;background-color:white;font-size:20px"),
                                                  br(),
@@ -382,7 +387,7 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                                                                                             \\right.$$',
                                                                    style="color:black;border:1px solid white;background-color:white;border-radius: 10px;font-size:18px"),
                                                                  p("Ah ah, me direz-vous! Pourquoi utilise-t-on \\(n-1\\) pour calculer l'estimateur de la variance? C'est légèrement compliqué (pas trop), mais
-                                                                   l'idée est de construire un estimateur sans biais. Avec les mains: en utilisant l'estimateur \\(\\mu\\) de la moyenne, on a `consommé` un degrès
+                                                                   l'idée est de construire un estimateur sans biais. Avec les mains: en utilisant l'estimateur \\(\\mu\\) de la moyenne, on a `consommé` un degré
                                                                    de liberté.",
                                                                    style="text-align:justify;color:black;background-color:lightblue;font-size:18px"),
                                                                  p("On note aussi que si la variable aléatoire est une quantité physique (par exemple une longueur), la variance est homogène à la dimension de
@@ -455,9 +460,67 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                                                           column(width=1, icon("hand-point-left","fa-5x"),align="center")),
                                                  fluidRow(column(width = 1),
                                                           column(width=10,
-                                                                 p("Non mais vous ne pensiez pas vous en sortir aussi facilement??",
+                                                                 p("Toutes ces notions se généralisent facilement à des distributions de probabilité multivariées: on parle alors de distributions
+                                                                   jointes. Evidemment
+                                                                   les calculs peuvent devenir plus pénibles, de même que les notations. En outre, on dispose de moins de
+                                                                   `lois de distribution standard` pour les distributions multivariées: en général on se cantonne aux distributions
+                                                                   symétriques (dans un sens qu'il conviendrait de préciser). Au passage, c'est tout l'intérêt des
+                                                                   copules (l'un de leurs intérêts en tout cas) que de permettre de décrire des distributions multivariées
+                                                                   très générales, mais le propos n'est pas là dans le cadre de cette présentation rapide. Typiquement, on peut
+                                                                   chercher à caractériser la distribution de probabilité d'un couple de variables aléatoires (taille/poids, débit/durée 
+                                                                   d'une crue, etc.), et on notera (exemple d'une distribution normale à deux dimensions):",
                                                                    style="text-align:justify;color:black;background-color:lightblue;font-size:18px"),
-                                                                 style="background-color:lightblue;border-radius: 10px"))
+                                                                 withMathJax(),
+                                                                 p('$$\\left(X, Y\\right) \\sim \\mathcal{N}\\left(\\boldsymbol{\\mu}, \\boldsymbol{\\Sigma}\\right)
+                                                                      \\qquad \\Leftrightarrow \\qquad
+                                                                    f_{X, Y}\\left(\\boldsymbol{x}, \\boldsymbol{y} \\right) = \\frac{1}{\\sqrt{2\\pi \\: tr\\left(\\Sigma\\right)}} e^{-\\frac{\\left(\\boldsymbol{x}-\\boldsymbol{\\mu}\\right)\\left(\\boldsymbol{x}-\\boldsymbol{\\mu}\\right)^T}{2 \\boldsymbol{\\Sigma}}}$$',
+                                                                   style="color:black;border:1px solid white;background-color:white;border-radius: 10px;font-size:18px"),
+                                                                 p("On voit tout de suite se profiler la difficulté. Typiquement, la variance n'est plus simplement un nombre scalaire: c'est une matrice, 
+                                                                   dite matrice de variance-covariance, qui décrit non seulement la dispersion des variables (au niveau des termes diagonaux), mais aussi
+                                                                   leurs interactions (via les termes extra-diagonaux). Nous y revenons sur la page suivante.",
+                                                                   style="text-align:justify;color:black;background-color:lightblue;font-size:18px"),
+                                                                 p("Illustrons cette notion sur un cas simple, avec deux variables indépendantes, distribuées normalement. La densité de probabilité
+                                                                   peut toujours être représentée, mais comme c'est une fonction de deux variables, il faut utiliser une représentation 3D, pas forcément
+                                                                   commode. En pratique on utilise plutôt des lignes de niveaux, qui sont un peu l'équivalent des histogrammes, `vus de dessus`.",
+                                                                   style="text-align:justify;color:black;background-color:lightblue;font-size:18px"),
+                                                                 p("Une quantité importante est la distribution marginale. On l'obtient tout simplement en intégrant toutes les autres variables: en 
+                                                                   d'autres termes, cela revient toujours à compter le nombre de réalisations dans un petit intervalle de la variable aléatoire, mais
+                                                                   ce comptage est effectué sans tenir compte de la valeur des autres variables (plus exactement, on les prend toutes en compte). Formellement,
+                                                                   la distribution jointe de X se calcule ainsi:",
+                                                                   style="text-align:justify;color:black;background-color:lightblue;font-size:18px"),
+                                                                 withMathJax(),
+                                                                 p('$$ f_{X} \\left( x \\right) = \\int_{-\\infty}^{+\\infty} f_{X, Y} \\left( \\boldsymbol{x}, \\boldsymbol{y} \\right) dy$$',
+                                                                   style="color:black;border:1px solid white;background-color:white;border-radius: 10px;font-size:18px"),
+                                                                 style="background-color:lightblue;border-radius: 10px")),
+                                                 br(),
+                                                 sidebarLayout(
+                                                   sidebarPanel(
+                                                     p("Essayons: ici, on fait varier la dispersion des variables X et Y, tout en les supposant indépendantes...",
+                                                       style="text-align:justify;color:black;font-size:18px"),
+                                                     br(),
+                                                     sliderInput("MarginalNsamplePanel",
+                                                                 "Nombre de points:",
+                                                                 value = 100,
+                                                                 min   = 50,
+                                                                 max   = 500,
+                                                                 step  = 25),
+                                                     sliderInput("MarginalXPanel",
+                                                                 "Dispersion de la variable aléatoire X (écart-type):",
+                                                                 value = 3,
+                                                                 min   = 1,
+                                                                 max   = 3,
+                                                                 step  = 0.25),
+                                                     sliderInput("MarginalYPanel",
+                                                                 "Dispersion de la variable aléatoire Y (écart-type):",
+                                                                 value = 3,
+                                                                 min   = 1,
+                                                                 max   = 3,
+                                                                 step  = 0.25)
+                                                   ),
+                                                   mainPanel(
+                                                     tabPanel("Plot", plotOutput("MarginalPlot",
+                                                                                 height = "475px"))
+                                                   ))
                                         ),
                                         tabPanel("Covariance et corrélation")),
                              navbarMenu("Les principales distributions de probabilité...",
@@ -479,7 +542,8 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                                                  fluidRow(column(tags$img(src = "Work_in_progress.jpg", width = "600px"),
                                                                  width = 12,
                                                                  style="display: block; margin-left: auto; margin-right: auto", align = "center"))
-                                        )
+                                        ),
+                                        
                              ),
                              tabPanel("Quelques références et liens utiles...",
                                       fluidRow(column(width=1, icon("book","fa-5x"),align="center"),
@@ -487,6 +551,6 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                                                  h3(p(strong("Quelques références et liens utiles..."),style="color:black;text-align:center")),
                                                  width=10,style="background-color:lightgrey;border-radius: 10px"),
                                                column(width=1, icon("book","fa-5x"),align="center"))
-                             )),
+                             ))
                   
 ))
