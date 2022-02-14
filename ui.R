@@ -930,7 +930,7 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                                                             ),
                                                             
                                                             mainPanel(
-                                                              fluidRow(column(tags$img(src = "800px-SiméonDenisPoisson.jpg", width = "400px"),
+                                                              fluidRow(column(tags$img(src = "800px-SimeonDenisPoisson.jpg", width = "400px"),
                                                                               width = 12,
                                                                               style="display: block; margin-left: auto; margin-right: auto", align = "center")),
                                                               br(),
