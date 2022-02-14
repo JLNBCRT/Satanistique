@@ -674,10 +674,10 @@ shinyServer(function(input, output) {
   VariableTCLDist <- reactive({
     switch(input$dist,
            norm  = "norm",
-#           unif  = "unif",
+           #           unif  = "unif",
            lnorm = "lnorm",
            gamma = "gamma",
-#           beta  = "beta",
+           #           beta  = "beta",
            rnorm)
   })
   
@@ -764,6 +764,224 @@ shinyServer(function(input, output) {
             legend.text  = element_text(size = 16))   
     
     ggarrange(g, h, i, ncol = 3, align = "hv")
+    
+  })
+  
+  VariableProbBernoulli <- reactive({
+    input$ProbBernoulli
+  })
+  
+  VariableNBernoulli <- reactive({
+    input$NBernoulli
+  })
+  
+  output$PlotBernoulli <- renderPlot({
+    
+    df <- data.frame(out = as.numeric(rbernoulli(n = VariableNBernoulli(), p = VariableProbBernoulli())))
+    
+    ggplot(df) +
+      geom_histogram(aes(x = out), color = "blue", fill = "blue", alpha = 0.50, show.legend = F, center = 1) +
+      geom_point(aes(x = mean(out),            y = 0, color = "Moyenne"), size = 5) +
+      geom_point(aes(x = median(out),          y = 0, color = "Médiane"), size = 5) +
+      geom_point(aes(x = quantile(out, 0.025), y = 0, color = "IC95"),    size = 5) +
+      geom_point(aes(x = quantile(out, 0.975), y = 0, color = "IC95"),    size = 5) +
+      xlim(c(-0.1,1.1)) +
+      scale_color_manual(name = "",
+                         values = c("Moyenne"  = "red",
+                                    "Médiane"  = "blue",
+                                    "IC95"     = "green")) +
+      xlab("X") +
+      ylab("Nombre de réalisations") +
+      theme_bw() +
+      theme(axis.text.x  = element_text(size = 16),
+            axis.text.y  = element_text(size = 16),
+            axis.title.x = element_text(size = 20),
+            axis.title.y = element_text(size = 20),
+            legend.text  = element_text(size = 16),
+            legend.position = "top")  
+    
+  })
+  
+  VariableProbBinom <- reactive({
+    input$ProbBinom
+  })
+  
+  VariableSizeBinom <- reactive({
+    input$SizeBinom
+  })
+  
+  VariableNBinom <- reactive({
+    input$NBinom
+  })
+  
+  output$PlotBinom <- renderPlot({
+    
+    df <- data.frame(out = as.numeric(rbinom(n = VariableNBinom(), size = VariableSizeBinom(), prob = VariableProbBinom())))
+    
+    ggplot(df) +
+      geom_histogram(aes(x = out), color = "blue", fill = "blue", alpha = 0.50, show.legend = F, center = 1, binwidth = 1) +
+      geom_point(aes(x = mean(out),            y = 0, color = "Moyenne"), size = 5) +
+      geom_point(aes(x = median(out),          y = 0, color = "Médiane"), size = 5) +
+      geom_point(aes(x = quantile(out, 0.025), y = 0, color = "IC95"),    size = 5) +
+      geom_point(aes(x = quantile(out, 0.975), y = 0, color = "IC95"),    size = 5) +
+      scale_color_manual(name = "",
+                         values = c("Moyenne"  = "red",
+                                    "Médiane"  = "blue",
+                                    "IC95"     = "green")) +
+      xlim(c(-1, VariableSizeBinom()+1)) +
+      xlab("X") +
+      ylab("Nombre de réalisations") +
+      theme_bw() +
+      theme(axis.text.x  = element_text(size = 16),
+            axis.text.y  = element_text(size = 16),
+            axis.title.x = element_text(size = 20),
+            axis.title.y = element_text(size = 20),
+            legend.text  = element_text(size = 16),
+            legend.position = "top")  
+    
+  })
+  
+  VariableLambdaPoisson <- reactive({
+    input$LambdaPoisson
+  })
+  
+  VariableTPoisson <- reactive({
+    input$TPoisson
+  })
+  
+  VariableNPoisson <- reactive({
+    input$NPoisson
+  })
+  
+  output$PlotPoisson <- renderPlot({
+    
+    df <- data.frame(out = as.numeric(rpois(n = VariableNPoisson(), lambda = VariableLambdaPoisson()*VariableTPoisson())))
+    
+    ggplot(df) +
+      geom_histogram(aes(x = out), color = "blue", fill = "blue", alpha = 0.50, show.legend = F, center = 1, binwidth = 1) +
+      geom_point(aes(x = mean(out),            y = 0, color = "Moyenne"), size = 5) +
+      geom_point(aes(x = median(out),          y = 0, color = "Médiane"), size = 5) +
+      geom_point(aes(x = quantile(out, 0.025), y = 0, color = "IC95"),    size = 5) +
+      geom_point(aes(x = quantile(out, 0.975), y = 0, color = "IC95"),    size = 5) +
+      scale_color_manual(name = "",
+                         values = c("Moyenne"  = "red",
+                                    "Médiane"  = "blue",
+                                    "IC95"     = "green")) +
+      xlab("X") +
+      ylab("Nombre de réalisations") +
+      theme_bw() +
+      theme(axis.text.x  = element_text(size = 16),
+            axis.text.y  = element_text(size = 16),
+            axis.title.x = element_text(size = 20),
+            axis.title.y = element_text(size = 20),
+            legend.text  = element_text(size = 18),
+            legend.position = "top")  
+    
+  })
+
+  
+  VariableAlphaBeta <- reactive({
+    input$AlphaBeta
+  })
+  
+  VariableBetaBeta <- reactive({
+    input$BetaBeta
+  })
+  
+  output$PlotBeta <- renderPlot({
+    
+    g <- ggplot() + 
+      stat_function(fun = dbeta, args = list(shape1 = VariableAlphaBeta(), shape2 = VariableBetaBeta()), color = "blue", size = 1) + 
+      xlim(c(0,1)) +
+      geom_point(aes(x = VariableAlphaBeta()/(VariableAlphaBeta()+VariableBetaBeta()),   y = 0, color = "Moyenne"), size = 5) +
+      geom_point(aes(x = qbeta(0.5, 
+                               shape1 = VariableAlphaBeta(),
+                               shape2 = VariableBetaBeta()), y = 0, color = "Médiane"), size = 5) +
+      geom_point(aes(x = qbeta(0.025, 
+                               shape1 = VariableAlphaBeta(),
+                               shape2 = VariableBetaBeta()), y = 0, color = "IC95"),    size = 5) +
+      geom_point(aes(x = qbeta(0.975, 
+                               shape1 = VariableAlphaBeta(),
+                               shape2 = VariableBetaBeta()), y = 0, color = "IC95"),    size = 5) +
+      xlab("X") +
+      ylab("Densité de probabilité") +
+      scale_color_manual(name = "",
+                         values = c("Moyenne"  = "red",
+                                    "Médiane"  = "blue",
+                                    "IC95"     = "green")) +
+      theme_bw() +
+      theme(axis.text.x  = element_text(size = 16),
+            axis.text.y  = element_text(size = 16),
+            axis.title.x = element_text(size = 20),
+            axis.title.y = element_text(size = 20),
+            legend.text  = element_text(size = 18),
+            legend.position = "top")
+    
+    h <- ggplot() + 
+      stat_function(fun = pbeta, args = list(shape1 = VariableAlphaBeta(), shape2 = VariableBetaBeta()), color = "blue", size = 1) +
+      xlim(c(0,1)) +
+      xlab("X") +
+      ylab("Fonction de répartition") +
+      theme_bw() +
+      theme(axis.text.x  = element_text(size = 16),
+            axis.text.y  = element_text(size = 16),
+            axis.title.x = element_text(size = 20),
+            axis.title.y = element_text(size = 20),
+            legend.text  = element_text(size = 18),
+            legend.position = "top")
+    
+    ggarrange(g, h, ncol = 2, common.legend = T, align = "hv")
+    
+  })
+  
+    
+  VariableMeanNorm <- reactive({
+    input$MeanNorm
+  })
+  
+  VariableSDNorm <- reactive({
+    input$SDNorm
+  })
+  
+  output$PlotNorm <- renderPlot({
+
+    g <- ggplot() + 
+      stat_function(fun = dnorm, args = list(mean = VariableMeanNorm(), sd = VariableSDNorm())) + 
+      xlim(-3*VariableSDNorm()+VariableMeanNorm(),3*VariableSDNorm()+VariableMeanNorm()) +
+      geom_point(aes(x = VariableMeanNorm(),   y = 0, color = "Moyenne"), size = 5) +
+      geom_point(aes(x = qnorm(0.5, 
+                               mean = VariableMeanNorm(),
+                               sd = VariableSDNorm()), y = 0, color = "Médiane"), size = 5) +
+      geom_point(aes(x = Qnorm(0.025, 
+                               mean = VariableMeanNorm(),
+                               sd = VariableSDNorm()), y = 0, color = "IC95"),    size = 5) +
+      geom_point(aes(x = Qnorm(0.975, 
+                               mean = VariableMeanNorm(),
+                               sd = VariableSDNorm()), y = 0, color = "IC95"),    size = 5) +
+      xlab("X") +
+      ylab("Densité de probabilité") +
+      theme_bw() +
+      theme(axis.text.x  = element_text(size = 16),
+            axis.text.y  = element_text(size = 16),
+            axis.title.x = element_text(size = 20),
+            axis.title.y = element_text(size = 20),
+            legend.text  = element_text(size = 18),
+            legend.position = "top")
+        
+    h <- ggplot() + 
+      stat_function(fun = pnorm, args = list(mean = VariableMeanNorm(), sd = VariableSDNorm())) + 
+      xlim(-3*VariableSDNorm()+VariableMeanNorm(),3*VariableSDNorm()+VariableMeanNorm()) +
+      xlab("X") +
+      ylab("Fonction de répartition") +
+      theme_bw() +
+      theme(axis.text.x  = element_text(size = 16),
+            axis.text.y  = element_text(size = 16),
+            axis.title.x = element_text(size = 20),
+            axis.title.y = element_text(size = 20),
+            legend.text  = element_text(size = 18),
+            legend.position = "top")
+    
+    ggarrange(g, h, ncol = 2, common.legend = T, align = "hv")
     
   })
   

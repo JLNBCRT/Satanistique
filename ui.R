@@ -738,8 +738,244 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                                                    ))
                                         )),
                              navbarMenu("Les principales distributions de probabilité...",
-                                        tabPanel("... discrètes"),
-                                        tabPanel("... continues")),
+                                        tabPanel("... discrètes",
+                                                 fluidRow(column(width=1, icon("hand-point-right","fa-5x"),align="center"),
+                                                          column(
+                                                            h3(p(strong("Les principales ditributions de probabilité discrètes"),style="color:black;text-align:center")),
+                                                            width=10,style="background-color:lightgrey;border-radius: 10px"),
+                                                          column(width=1, icon("hand-point-left","fa-5x"),align="center")),
+                                                 fluidRow(column(width = 1),
+                                                          column(width=10,
+                                                                 p("On parle de distribution de probabilité discrète lorsque le support de la variable aléatoire \\(X\\) est discret (en
+                                                                   pratique, un sous-ensemble de \\(\\mathbb{Z}\\)).
+                                                                   Ici on se propose, pour quelques-unes d'entre elles, de présenter les principales caractérisitques (paramètres, 
+                                                                   distribution de probabilité et fonction de répartition, moyenne, médiane, quantiles...).
+                                                                   La courte liste proposée ici pourra être complétée à l'envie (par exemple avec la négative-binomiale, 
+                                                                   une variante de la loi de Poisson à deux paramètres, utiles pour décrire les phénomènes rares - on parle
+                                                                   de distribution `à queue épaisse`).",
+                                                                   style="text-align:justify;color:black;background-color:lightblue;font-size:18px"),
+                                                                 style="background-color:lightblue;border-radius: 10px")),
+                                                 br(),
+                                                 tabsetPanel(
+                                                   tabPanel("Bernoulli",
+                                                            sidebarPanel(
+                                                              p("La distribution de Bernoulli permet de décrire des variables aléatoires à deux alternatives (par exemple
+                                                                le résultat d'un tirage pile ou face). Elle est donc définie sur le support \\(\\left\\{0,1\\right\\}\\). Le 
+                                                                seul paramètre de cette distribution de probabilité est la probabilité de succès du tirage, que l'on note
+                                                                traditionnellement \\(p\\).",
+                                                                style="text-align:justify;color:black;font-size:18px"),
+                                                              br(),
+                                                              withMathJax(),
+                                                              p('$$\\mathcal{P}\\left(X=x\\right) = p^x\\left(1-p\\right)^{1-x}
+                                                                    \\longrightarrow
+                                                                    \\left\\{ 
+                                                                      \\begin{aligned} 
+                                                                        \\mathbb{E}\\left[ X \\right] = p \\\\
+                                                                        Var\\left( X \\right) = p\\left( 1-p \\right)
+                                                                      \\end{aligned}
+                                                                    \\right.
+                                                                   $$',
+                                                                style="color:black;border:1px solid white;background-color:white;border-radius: 10px;font-size:18px"),
+                                                              br(),
+                                                              sliderInput("ProbBernoulli",
+                                                                          "Probabilité de succès:",
+                                                                          value = 0.5,
+                                                                          min   = 0,
+                                                                          max   = 1,
+                                                                          step  = 0.01),
+                                                              sliderInput("NBernoulli",
+                                                                          "Nombre de tirages:",
+                                                                          value = 100,
+                                                                          min   = 2,
+                                                                          max   = 1000,
+                                                                          step  = 2)
+                                                            ),
+                                                            mainPanel(
+                                                              tabPanel("Plot", plotOutput("PlotBernoulli",
+                                                                                          height = "600px"))
+                                                            )),
+                                                   tabPanel("Binomiale",
+                                                            
+                                                            sidebarPanel(
+                                                              p("La distribution Binomiale permet de décrire le nombre de succès parmi n tirages d'une variable aléatoire
+                                                              de Bernoulli. Elle est donc définie sur le support \\(\\left\\{0,n\\right\\}\\). Il s'agit d'une distribution
+                                                              à deux paramètres, la probabilité de succès de chaque épreuve de Bernoulli, que l'on note traditionnellement \\(p\\),
+                                                                ainsi que le nombre de tirages, que l'on note ici \\(n\\).",
+                                                                style="text-align:justify;color:black;font-size:18px"),
+                                                              br(),
+                                                              withMathJax(),
+                                                              p('$$\\mathcal{P}\\left(X=x\\right) = 
+                                                              \\left(
+                                                                \\begin{aligned}
+                                                                n \\\\
+                                                                x
+                                                                \\end{aligned}
+                                                              \\right) p^x\\left(1-p\\right)^{n-x}
+                                                                    \\longrightarrow
+                                                                    \\left\\{ 
+                                                                      \\begin{aligned} 
+                                                                        \\mathbb{E}\\left[ X \\right] = np \\\\
+                                                                        Var\\left( X \\right) = np\\left( 1-p \\right)
+                                                                      \\end{aligned}
+                                                                    \\right.
+                                                                   $$',
+                                                                style="color:black;border:1px solid white;background-color:white;border-radius: 9px;font-size:18px"),
+                                                              br(),
+                                                              sliderInput("ProbBinom",
+                                                                          "Probabilité de succès:",
+                                                                          value = 0.5,
+                                                                          min   = 0,
+                                                                          max   = 1,
+                                                                          step  = 0.01),
+                                                              sliderInput("SizeBinom",
+                                                                          "Nombre de tentatives:",
+                                                                          value = 10,
+                                                                          min   = 1,
+                                                                          max   = 50,
+                                                                          step  = 1),
+                                                              sliderInput("NBinom",
+                                                                          "Nombre de tirages:",
+                                                                          value = 100,
+                                                                          min   = 2,
+                                                                          max   = 1000,
+                                                                          step  = 2)),
+                                                            
+                                                            mainPanel(
+                                                              tabPanel("Plot", plotOutput("PlotBinom",
+                                                                                          height = "600px"))
+                                                            )
+                                                   ),
+                                                   tabPanel("Poisson",
+                                                            
+                                                            
+                                                            sidebarPanel(
+                                                              p("La distribution de Poisson permet de décrire de très nombreux phénomènes, lorsque ceux-ci
+                                                                       peuvent être décrits par un processus `sans mémoire`. 
+                                                                       Dans le domaine
+                                                                       de la fiabilité elle joue un rôle important pour modéliser le nombre de défaillance d'un 
+                                                                       matériel pendant une durée \\(T\\). Elle est donc définie sur l'ensemble des entiers.",
+                                                                style="text-align:justify;color:black;font-size:18px"), 
+                                                              p("Le paramètre clef de cette distribution, outre cette
+                                                                       durée de scrutation, est le taux de défaillance \\(\\lambda\\).",
+                                                                style="text-align:justify;color:black;font-size:18px"), 
+                                                              p("Dans les ouvrages de statistique, cette distribution est caratérisée par un paramètre
+                                                                         unique \\(\\theta\\) (ou même \\(\\lambda\\)): en pratique, il est facile de ne pas
+                                                                         confondre ces paramètres: le taux de défaillance à la dimension de l'inverse de \\(T\\),
+                                                                         alors que le paramètre \\(\\theta\\) utilisé en statistique est sans dimension.",
+                                                                style="text-align:justify;color:black;font-size:18px"),
+                                                              br(),
+                                                              withMathJax(),
+                                                              p('$$\\mathcal{P}\\left(X=x\\right) = 
+                                                                       \\frac{\\left(\\lambda T\\right)^x e^{-\\lambda T}}{x!}
+                                                                    \\longrightarrow
+                                                                    \\left\\{ 
+                                                                      \\begin{aligned} 
+                                                                        \\mathbb{E}\\left[ X \\right] = \\lambda T \\\\
+                                                                        Var\\left( X \\right) = \\lambda T
+                                                                      \\end{aligned}
+                                                                    \\right.
+                                                                   $$',
+                                                                style="color:black;border:1px solid white;background-color:white;border-radius: 9px;font-size:18px"),
+                                                              br(),
+                                                              sliderInput("LambdaPoisson",
+                                                                          "Taux de défaillance:",
+                                                                          value = 0.1,
+                                                                          min   = 0,
+                                                                          max   = 1,
+                                                                          step  = 0.01),
+                                                              sliderInput("TPoisson",
+                                                                          "Durée de scrutation:",
+                                                                          value = 10,
+                                                                          min   = 1,
+                                                                          max   = 50,
+                                                                          step  = 1),
+                                                              sliderInput("NPoisson",
+                                                                          "Nombre de tirages:",
+                                                                          value = 100,
+                                                                          min   = 2,
+                                                                          max   = 1000,
+                                                                          step  = 2)),
+                                                            
+                                                            mainPanel(
+                                                              tabPanel("Plot", plotOutput("PlotPoisson",
+                                                                                          height = "700px"))
+                                                            )
+                                                   )
+                                                 )
+                                        ),
+                                        tabPanel("... continues",
+                                                 
+                                                 fluidRow(column(width=1, icon("hand-point-right","fa-5x"),align="center"),
+                                                          column(
+                                                            h3(p(strong("Les principales ditributions de probabilité continues"),style="color:black;text-align:center")),
+                                                            width=10,style="background-color:lightgrey;border-radius: 10px"),
+                                                          column(width=1, icon("hand-point-left","fa-5x"),align="center")),
+                                                 fluidRow(column(width = 1),
+                                                          column(width=10,
+                                                                 p("On parle de distribution de probabilité continue lorsque le support de la variable aléatoire \\(X\\) est continu (en
+                                                                   pratique, un sous-ensemble de \\(\\mathbb{R}\\)).",
+                                                                   style="text-align:justify;color:black;background-color:lightblue;font-size:18px"),
+                                                                 p("La classe des distributions continues pour lesquelles on dispose d'une formulation analytique est beaucoup
+                                                                 plus vaste que celle des distributions discrètes. on se propose, pour quelques-unes d'entre elles seulement, de présenter les principales caractérisitques (paramètres, 
+                                                                   distribution de probabilité et fonction de répartition, moyenne, médiane, quantiles...).",
+                                                                   style="text-align:justify;color:black;background-color:lightblue;font-size:18px"),
+                                                                 p("La courte liste proposée ici pourra être complétée à l'envie (exponentielle, Student...).",
+                                                                   style="text-align:justify;color:black;background-color:lightblue;font-size:18px"),
+                                                                 style="background-color:lightblue;border-radius: 10px")),
+                                                 br(),
+                                                 tabsetPanel(
+                                                   tabPanel("Beta",
+                                                            
+                                                            sidebarPanel(
+                                                              p("La distribution Beta est une distribution définie sur le segment \\([0, 1]\\right).
+                                                                Il s'agit d'une distribution très `flexible`, permettant de décrire un grand nombre
+                                                                de situations (symétriques ou disymétriques), y compris la distribution uniforme.",
+                                                                style="text-align:justify;color:black;font-size:18px"), 
+                                                              p("Cette distribution est caractérisée par deux paramètres de forme \\(\\alpha\\) et \\(\\beta\\).",
+                                                                style="text-align:justify;color:black;font-size:18px"),
+                                                              br(),
+                                                              withMathJax(),
+                                                              p('$$\\mathcal{P}\\left(X=x\\right) = 
+                                                                       \\frac{\\Gamma\\left(\\alpha + \\beta \\right)}{\\Gamma\\left(\\alpha \\right)\\Gamma\\left(\\beta \\right)} x^{\\alpha -1} \\left(1-x\\right)^{\\beta -1}
+                                                                    $$',
+                                                                style="color:black;border:1px solid white;background-color:white;border-radius: 9px;font-size:18px"),
+                                                              p('$$\\longrightarrow \\left\\{ 
+                                                                      \\begin{aligned} 
+                                                                        \\mathbb{E}\\left[ X \\right] = \\frac{\\alpha}{\\alpha + \\beta}  \\\\
+                                                                        Var\\left( X \\right) = \\frac{\\alpha \\beta}{\\left(\\alpha + \\beta \\right)^2\\left(\\alpha + \\beta + 1 \\right)}
+                                                                      \\end{aligned}
+                                                                    \\right.
+                                                                   $$',
+                                                                style="color:black;border:1px solid white;background-color:white;border-radius: 9px;font-size:18px"),
+                                                              br(),
+                                                              sliderInput("AlphaBeta",
+                                                                          "Paramètre de forme \\(\\alpha\\):",
+                                                                          value = 1,
+                                                                          min   = 0,
+                                                                          max   = 10,
+                                                                          step  = 0.1),
+                                                              sliderInput("BetaBeta",
+                                                                          "Paramètre de forme \\(\\beta\\):",
+                                                                          value = 1,
+                                                                          min   = 0,
+                                                                          max   = 10,
+                                                                          step  = 0.1)),
+                                                            
+                                                            mainPanel(
+                                                              tabPanel("Plot", plotOutput("PlotBeta",
+                                                                                          height = "550px"))
+                                                            )
+                                                            
+                                                            ),
+                                                   tabPanel("Normale"),
+                                                   tabPanel("Lognormale"),
+                                                   tabPanel("Gamma"),
+                                                   tabPanel("\\(\\chi^2\\)"),
+                                                   tabPanel("Dirichlet")
+                                                 )
+                                        ),
+                                        tabPanel("...superposées (lois continues)")
+                                        ),
                              tabPanel("Le théorème central limite",
                                       fluidRow(column(width=1, icon("hand-point-right","fa-5x"),align="center"),
                                                column(
@@ -803,7 +1039,7 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                                                           column(tags$img(src = "WIP.png", width = "100px"),
                                                                  width = 1,
                                                                  style="display: block; margin-left: auto; margin-right: auto",align="center")),
-                                                 fluidRow(column(tags$img(src = "Work_in_progress.jpg", width = "600px"),
+                                                 fluidRow(column(tags$img(src = "RegLin.jpg", width = "600px"),
                                                                  width = 12,
                                                                  style="display: block; margin-left: auto; margin-right: auto", align = "center"))
                                         )
