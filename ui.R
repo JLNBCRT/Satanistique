@@ -106,7 +106,7 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                                                                    application mathématique qui part de l'Univers \\(\\Omega\\) vers l'ensemble \\(\\mathbb{R}^+\\) des réels positifs (l'instant du 
                                                                    premier tir est un nombre réel positif):",
                                                                    style="text-align:justify;color:black;background-color:lightblue;font-size:18px"),
-                                                                 p('$$X: \\Omega \\longrightarrow \\mathbb{R}^+ \\qquad (variable\\ aléatoire:\\ instant\\ du\\ premier\\ tir)$$',
+                                                                 p('$$X: \\Omega \\longrightarrow \\mathbb{R}^+$$',
                                                                    style="color:black;border:1px solid white;background-color:white;border-radius: 10px;font-size:18px"),
                                                                  p("C'est cette fonction X que l'on appelle variable aléatoire. On comprend bien qu'il serait vain de
                                                                    chercher à la caractériser entièrement, même en considérant une portion réduire de l'Univers (c'est l'étape 
@@ -116,6 +116,11 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                                                                    absence - modifie radicalement l'état de nervosité du valeureux cowboy). Un événement (par exemple, Henry Fonda tire avant 12h45)
                                                                    correspond alors à l'ensemble des états de l'Univers \\(\\Omega\\) tels que cet événement survient. Intuitivement, sa probabilité
                                                                    est simplement la `taille` du sous-espace de \\(\\Omega\\) correspondant à l'événement considéré, divisée par celle de \\(\\Omega\\).",
+                                                                   style="text-align:justify;color:black;background-color:lightblue;font-size:18px"),
+                                                                 p("L'un des objectifs de la statistique descriptive est de caractériser la distribution de probabilité des variables
+                                                                   aléatoires d'intérêt (l'instant du premier tir, le résultat d'un lancer de dé, le nombre de défaillance de la pompe
+                                                                   RIS 052 PO sur les 10 dernières années) avec un ensemble réduit de paramètres: moyenne, médiane, écart-type, variance,
+                                                                   quantiles, etc.",
                                                                    style="text-align:justify;color:black;background-color:lightblue;font-size:18px"),
                                                                  p("A ce stade, une discussion sur ces éléments peut s'avérer nécessaire!",
                                                                    style="text-align:justify;color:black;background-color:lightblue;font-size:18px"),
@@ -151,6 +156,16 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                                                                    variable aléatoire (peu importe le type de distribution de probabilité). On fait varier le nombre de réalisations observées, et on trace 
                                                                    l'histogramme et la densité de probabilité associée. Sur la partie droite du graphe, on représente la distribution cumulée: sans 
                                                                    formaliser excessivement, cette distribution cumulée correspond simplement à l'intégrale de la densité.",
+                                                                   style="text-align:justify;color:black;background-color:lightblue;font-size:18px"),
+                                                                 p("Un point de vigilance: pour les variables aléatoires discrètes (par exemple, le résultat d'un lancer de dé), on donne
+                                                                   directement la probabilité de chaque événement, qui est bien défini. Par contre pour une variable aléatoire, on donne
+                                                                   la densité de probabilité \\(f_X\\left(x\\right)\\). Il n'y a aucune raison que cette densité soit inférieure à 1. En fait,
+                                                                   Le lien avec la probabilité peut s'écrire ainsi:",
+                                                                   style="text-align:justify;color:black;background-color:lightblue;font-size:18px"),
+                                                                 withMathJax(),
+                                                                 p('$$\\mathcal{P}\\left(x < X < x+dx \\right) = f_X\\left(x\\right)dx \\Leftrightarrow \\mathcal{P}\\left(X < x\\right) = \\underbrace{\\int_{-\\infty}^x f_X\\left(x\\right)dx}_{\\in [0,1]}$$',
+                                                                   style="color:black;border:1px solid white;background-color:white;border-radius: 10px;font-size:18px"),
+                                                                 p("En fait, la probabilité d'observer exactement \\(X=x\\) est nulle!",
                                                                    style="text-align:justify;color:black;background-color:lightblue;font-size:18px"),
                                                                  width = 10,
                                                                  style="background-color:lightblue;border-radius: 10px",align="center")),
@@ -235,8 +250,8 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                                                                  "Nombre d'observations:",
                                                                  value = 10,
                                                                  min   = 1,
-                                                                 max   = 1000,
-                                                                 step  = 5)
+                                                                 max   = 100,
+                                                                 step  = 1)
                                                    ),
                                                    mainPanel(
                                                      tabPanel("Plot", plotOutput("plotMean",
@@ -380,7 +395,7 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                                                                    la variance:",
                                                                    style="text-align:justify;color:black;background-color:lightblue;font-size:18px"),
                                                                  withMathJax(),
-                                                                 p('$$\\sigma = \\frac{1}{n-1} \\sum_{i=1}^{n} \\left(x_i-\\mu \\right)^2 \\ \\longrightarrow
+                                                                 p('$$\\sigma^2 = \\frac{1}{n-1} \\sum_{i=1}^{n} \\left(x_i-\\mu \\right)^2 \\ \\longrightarrow
                                                                       Var \\left( X \\right) = \\left\\{ \\begin{aligned} 
                                                                                                 \\sum_{i=1}^n p_i \\left(x_i-\\mathbb{E} [X]\\right)^2 \\\\
                                                                                                 \\int_{-\\infty}^\\infty f(x) \\left( x - \\mathbb{E} [X] \\right)^2 dx
@@ -393,11 +408,8 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                                                                    style="text-align:justify;color:black;background-color:lightblue;font-size:18px"),
                                                                  p("On note aussi que si la variable aléatoire est une quantité physique (par exemple une longueur), la variance est homogène à la dimension de
                                                                    cette variable au carré (une surface), ce qui complique l'interprétation. Pour y remédier, les statisticiens ont interoduit la notion d'écart-type,
-                                                                   qui n'est rien d'autre que la racine carrée de la variance:",
+                                                                   qui n'est rien d'autre que la racine carrée de la variance.",
                                                                    style="text-align:justify;color:black;background-color:lightblue;font-size:18px"),
-                                                                 withMathJax(),
-                                                                 p('$$sd = \\sqrt{\\sigma}$$',
-                                                                   style="color:black;border:1px solid white;background-color:white;border-radius: 10px;font-size:18px"),
                                                                  p("Il est intéressant de faire le lien entre la largeur de l'intervalle de confiance et l'écaert-type pour la distribution normale: R est un bon
                                                                    outil pour essayer de comprendre ce lien de manière quantitative, mais on peut également utiliser des tables de lois normales comme celle que l'on 
                                                                    peut voir à la fin de cette page.",
@@ -849,33 +861,32 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                                                             
                                                             
                                                             sidebarPanel(
-                                                              p("La distribution de Poisson permet de décrire de très nombreux phénomènes, lorsque ceux-ci
-                                                                       peuvent être décrits par un processus `sans mémoire`. 
-                                                                       Dans le domaine
-                                                                       de la fiabilité elle joue un rôle important pour modéliser le nombre de défaillance d'un 
-                                                                       matériel pendant une durée \\(T\\). Elle est donc définie sur l'ensemble des entiers.",
-                                                                style="text-align:justify;color:black;font-size:18px"), 
-                                                              p("Le paramètre clef de cette distribution, outre cette
-                                                                       durée de scrutation, est le taux de défaillance \\(\\lambda\\).",
-                                                                style="text-align:justify;color:black;font-size:18px"), 
-                                                              p("Dans les ouvrages de statistique, cette distribution est caratérisée par un paramètre
-                                                                         unique \\(\\theta\\) (ou même \\(\\lambda\\)): en pratique, il est facile de ne pas
-                                                                         confondre ces paramètres: le taux de défaillance à la dimension de l'inverse de \\(T\\),
-                                                                         alors que le paramètre \\(\\theta\\) utilisé en statistique est sans dimension.",
+                                                              p("La distribution de Poisson permet de décrire de très nombreux phénomènes, en particulier à leur 
+                                                              comptage (elle est définie sur l'ensemble des entiers naturels). Pour l'introduire 
+                                                              correctement, il faudrait faire le lien avec la notion de processus de Poisson. En deux mots, on 
+                                                              peut simplement dire que si l'occurrence d'un événement donné (désintégration radioactive, par 
+                                                              exemple) respecte les propriétés suivantes:", 
+                                                                
+                                                                tags$ul(
+                                                                  tags$li("Les nombres d'occurrences du phénomène dans deux intervalles de temps séparés (disjoints) 
+                                                                          sont indépendants l'un de l'autre"), 
+                                                                  tags$li("La probabilité d'observer l'occurrence du phénomène pendant un intervalle de temps 
+                                                                          infinitésimal est proportionnel à la longeur de cet intervalle: 
+                                                                          \\(\\mathcal{P}\\left(E \\in [t, t+dt]\\right) = \\lambda dt\\)"), 
+                                                                  tags$li("La probabilité d'observer plus d'un événement dans un intervalle de temps infinitésimal
+                                                                          est nulle")
+                                                                ),
                                                                 style="text-align:justify;color:black;font-size:18px"),
-                                                              br(),
-                                                              withMathJax(),
-                                                              p('$$\\mathcal{P}\\left(X=x\\right) = 
-                                                                       \\frac{\\left(\\lambda T\\right)^x e^{-\\lambda T}}{x!}
-                                                                    \\longrightarrow
-                                                                    \\left\\{ 
-                                                                      \\begin{aligned} 
-                                                                        \\mathbb{E}\\left[ X \\right] = \\lambda T \\\\
-                                                                        Var\\left( X \\right) = \\lambda T
-                                                                      \\end{aligned}
-                                                                    \\right.
-                                                                   $$',
-                                                                style="color:black;border:1px solid white;background-color:white;border-radius: 9px;font-size:18px"),
+                                                              p("alors le nombre d'occurrences du phénomène pendant une durée \\(T\\) est une variable aléatoire
+                                                                distribuée selon une loi de Poisson.",
+                                                                style="text-align:justify;color:black;font-size:18px"),
+                                                              p("On montre également que l'intervalle de temps séparant deux événements est une variable aléatoire
+                                                                distribuée selon une loi exponentielle: cette distribution possède une propriété importante d'absence
+                                                                de mémoire, illustré dans la page dédiée à cette distribution.",
+                                                                style="text-align:justify;color:black;font-size:18px"),
+                                                              p("Dans le domaine de la fiabilité elle joue un rôle important pour modéliser le nombre de défaillance d'un 
+                                                                matériel pendant une durée \\(T\\).",
+                                                                style="text-align:justify;color:black;font-size:18px"),
                                                               br(),
                                                               sliderInput("LambdaPoisson",
                                                                           "Taux de défaillance:",
@@ -894,11 +905,37 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                                                                           value = 100,
                                                                           min   = 2,
                                                                           max   = 1000,
-                                                                          step  = 2)),
+                                                                          step  = 2),
+                                                              p("Le paramètre clef de cette distribution, outre cette
+                                                                       durée de scrutation, est le taux de défaillance \\(\\lambda\\).",
+                                                                style="text-align:justify;color:black;font-size:18px"), 
+                                                              p("Dans les ouvrages de statistique, cette distribution est caratérisée par un paramètre
+                                                                         unique \\(\\theta\\) (ou même \\(\\lambda\\)): en pratique, il est facile de ne pas
+                                                                         confondre ces paramètres: le taux de défaillance à la dimension de l'inverse de \\(T\\),
+                                                                alors que le paramètre \\(\\theta\\) utilisé en statistique est sans dimension.",
+                                                                style="text-align:justify;color:black;font-size:18px"),
+                                                              br(),
+                                                              withMathJax(),
+                                                              p('$$\\mathcal{P}\\left(X=x\\right) = 
+                                                                       \\frac{\\left(\\lambda T\\right)^x e^{-\\lambda T}}{x!}
+                                                                    \\longrightarrow
+                                                                    \\left\\{ 
+                                                                      \\begin{aligned} 
+                                                                        \\mathbb{E}\\left[ X \\right] = \\lambda T \\\\
+                                                                        Var\\left( X \\right) = \\lambda T
+                                                                      \\end{aligned}
+                                                                    \\right.
+                                                                   $$',
+                                                                style="color:black;border:1px solid white;background-color:white;border-radius: 9px;font-size:18px")
+                                                            ),
                                                             
                                                             mainPanel(
+                                                              fluidRow(column(tags$img(src = "800px-SiméonDenisPoisson.jpg", width = "400px"),
+                                                                              width = 12,
+                                                                              style="display: block; margin-left: auto; margin-right: auto", align = "center")),
+                                                              br(),
                                                               tabPanel("Plot", plotOutput("PlotPoisson",
-                                                                                          height = "700px"))
+                                                                                          height = "800px"))
                                                             )
                                                    )
                                                  )
@@ -913,13 +950,13 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                                                  fluidRow(column(width = 1),
                                                           column(width=10,
                                                                  p("On parle de distribution de probabilité continue lorsque le support de la variable aléatoire \\(X\\) est continu (en
-                                                                   pratique, un sous-ensemble de \\(\\mathbb{R}\\)).",
+                                                                                                                                                                                      pratique, un sous-ensemble de \\(\\mathbb{R}\\)).",
                                                                    style="text-align:justify;color:black;background-color:lightblue;font-size:18px"),
                                                                  p("La classe des distributions continues pour lesquelles on dispose d'une formulation analytique est beaucoup
                                                                  plus vaste que celle des distributions discrètes. on se propose, pour quelques-unes d'entre elles seulement, de présenter les principales caractérisitques (paramètres, 
-                                                                   distribution de probabilité et fonction de répartition, moyenne, médiane, quantiles...).",
+                                                                                                                                                                                                                             distribution de probabilité et fonction de répartition, moyenne, médiane, quantiles...).",
                                                                    style="text-align:justify;color:black;background-color:lightblue;font-size:18px"),
-                                                                 p("La courte liste proposée ici pourra être complétée à l'envie (exponentielle, Student...).",
+                                                                 p("La courte liste proposée ici pourra être complétée à l'envie (Student, Dirichlet...).",
                                                                    style="text-align:justify;color:black;background-color:lightblue;font-size:18px"),
                                                                  style="background-color:lightblue;border-radius: 10px")),
                                                  br(),
@@ -927,55 +964,313 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                                                    tabPanel("Beta",
                                                             
                                                             sidebarPanel(
-                                                              p("La distribution Beta est une distribution définie sur le segment \\([0, 1]\\right).
+                                                              p("La distribution Beta est une distribution définie sur le segment \\([0, 1]\\).
                                                                 Il s'agit d'une distribution très `flexible`, permettant de décrire un grand nombre
                                                                 de situations (symétriques ou disymétriques), y compris la distribution uniforme.",
                                                                 style="text-align:justify;color:black;font-size:18px"), 
                                                               p("Cette distribution est caractérisée par deux paramètres de forme \\(\\alpha\\) et \\(\\beta\\).",
+                                                                br(),
+                                                                sliderInput("AlphaBeta",
+                                                                            "Paramètre de forme \\(\\alpha\\):",
+                                                                            value = 1,
+                                                                            min   = 0,
+                                                                            max   = 10,
+                                                                            step  = 0.1),
+                                                                sliderInput("BetaBeta",
+                                                                            "Paramètre de forme \\(\\beta\\):",
+                                                                            value = 1,
+                                                                            min   = 0,
+                                                                            max   = 10,
+                                                                            step  = 0.1),
                                                                 style="text-align:justify;color:black;font-size:18px"),
                                                               br(),
                                                               withMathJax(),
-                                                              p('$$\\mathcal{P}\\left(X=x\\right) = 
-                                                                       \\frac{\\Gamma\\left(\\alpha + \\beta \\right)}{\\Gamma\\left(\\alpha \\right)\\Gamma\\left(\\beta \\right)} x^{\\alpha -1} \\left(1-x\\right)^{\\beta -1}
-                                                                    $$',
-                                                                style="color:black;border:1px solid white;background-color:white;border-radius: 9px;font-size:18px"),
-                                                              p('$$\\longrightarrow \\left\\{ 
-                                                                      \\begin{aligned} 
-                                                                        \\mathbb{E}\\left[ X \\right] = \\frac{\\alpha}{\\alpha + \\beta}  \\\\
-                                                                        Var\\left( X \\right) = \\frac{\\alpha \\beta}{\\left(\\alpha + \\beta \\right)^2\\left(\\alpha + \\beta + 1 \\right)}
-                                                                      \\end{aligned}
-                                                                    \\right.
-                                                                   $$',
-                                                                style="color:black;border:1px solid white;background-color:white;border-radius: 9px;font-size:18px"),
-                                                              br(),
-                                                              sliderInput("AlphaBeta",
-                                                                          "Paramètre de forme \\(\\alpha\\):",
-                                                                          value = 1,
-                                                                          min   = 0,
-                                                                          max   = 10,
-                                                                          step  = 0.1),
-                                                              sliderInput("BetaBeta",
-                                                                          "Paramètre de forme \\(\\beta\\):",
-                                                                          value = 1,
-                                                                          min   = 0,
-                                                                          max   = 10,
-                                                                          step  = 0.1)),
+                                                              p('$$f_X\\left(x\\right) = 
+                                                                  \\frac{\\Gamma\\left(\\alpha + \\beta \\right)}{\\Gamma\\left(\\alpha \\right)\\Gamma\\left(\\beta \\right)} x^{\\alpha -1} \\left(1-x\\right)^{\\beta -1} \\\\
+                                                                \\longrightarrow \\left\\{ 
+                                                                  \\begin{aligned} 
+                                                                  \\mathbb{E}\\left[ X \\right] = \\frac{\\alpha}{\\alpha + \\beta}  \\\\
+                                                                  Var\\left( X \\right) = \\frac{\\alpha \\beta}{\\left(\\alpha + \\beta \\right)^2\\left(\\alpha + \\beta + 1 \\right)}
+                                                                  \\end{aligned}
+                                                                  \\right.
+                                                                  $$',
+                                                                style="color:black;border:1px solid white;background-color:white;border-radius: 9px;font-size:18px")),
                                                             
                                                             mainPanel(
                                                               tabPanel("Plot", plotOutput("PlotBeta",
                                                                                           height = "550px"))
                                                             )
                                                             
+                                                   ),
+                                                   tabPanel("Exponentielle",
+                                                            
+                                                            sidebarPanel(
+                                                              p("On l'a vu, la loi Exponentielle est intimement liée à la loi de Poisson: 
+                                                                lorsque des événements surviennent selon un processus de Poisson (événements
+                                                                rares), alors le nombre d'événements observés pendant une durée \\(T\\) est
+                                                                distribué selon une loi de Poisson de paramètre \\(\\lambda T\\), et les intervalles
+                                                                de temps entre deux événements successifs sont distribués selon une loi exponentielle.",
+                                                                style="text-align:justify;color:black;font-size:18px"),
+                                                              p("La distribution Exponentielle est définie sur l'ensemble des réels positifs, et elle est
+                                                                caractérisée par un seul paramètre \\(\\lambda\\) (le même que celui de la loi de Poisson associée):",
+                                                                style="text-align:justify;color:black;font-size:18px"),
+                                                              withMathJax(),
+                                                              p('$$X \\sim Exp\\left(\\lambda\\right) \\Leftrightarrow f_X\\left(x\\right) = \\lambda e^{-\\lambda x} \\\\
+                                                                \\longrightarrow \\left\\{ 
+                                                                  \\begin{aligned} 
+                                                                  \\mathbb{E}\\left[ X \\right] = \\frac{1}{\\lambda}  \\\\
+                                                                  Var\\left( X \\right) = \\frac{1}{\\lambda^2}
+                                                                  \\end{aligned}
+                                                                  \\right.
+                                                                  $$',
+                                                                style="color:black;border:1px solid white;background-color:white;border-radius: 9px;font-size:18px"),
+                                                              sliderInput("LambdaExp",
+                                                                          "Taux \\(\\lambda\\):",
+                                                                          value = 0.5,
+                                                                          min   = 0,
+                                                                          max   = 1,
+                                                                          step  = 0.05),
+                                                              p("La distribution exponentielle est commode pour modéliser les temps de restauration dans nos modèles EPS EI.",
+                                                                style="text-align:justify;color:black;font-size:18px"),
+                                                              br(),
+                                                              p("Ici on se propose d'illustrer le lien entre la loi exponentielle et la loi de Poison. Pour cela, on génère un
+                                                                grand nombre de fois un Univers dans lequel on recense le nombre d'occurences d'un événement X donné pendant une période
+                                                                d'un an. Chaque appui sur le bouton ci-dessous génére une nouvelle réalisation de l'Univers.",
+                                                                style="text-align:justify;color:black;font-size:18px"),
+                                                              actionButton("New", icon("hand-point-right","fa-5x")),
+                                                              br(),
+                                                              p("A chaque réalisation de l'Univers, on garde le nombre d'événements observés, et on trace l'histogramme. On peut
+                                                                alors constater qu'asymptotiquement, la distribution ainsi obtenue converge vers une distribution de Poisson de 
+                                                                paramètre \\(\\lambda\\), conformément à l'attendu. On contrôle avec la réglette ci-dessous le nombre de réalisations
+                                                                de l'Univers prises en compte.",
+                                                                style="text-align:justify;color:black;font-size:18px"),
+                                                              br(),
+                                                              sliderInput("NExpPois",
+                                                                          "Nombre de répétitions:",
+                                                                          value = 100,
+                                                                          min   = 10,
+                                                                          max   = 1000,
+                                                                          step  = 10)
                                                             ),
-                                                   tabPanel("Normale"),
-                                                   tabPanel("Lognormale"),
-                                                   tabPanel("Gamma"),
-                                                   tabPanel("\\(\\chi^2\\)"),
-                                                   tabPanel("Dirichlet")
+                                                            mainPanel(
+                                                              tabPanel("Plot", plotOutput("PlotExp",
+                                                                                          height = "500px")),
+                                                              br(),
+                                                              hr(),
+                                                              br(),
+                                                              tabPanel("Plot", plotOutput("PlotExpGen",
+                                                                                          height = "100px")),
+                                                              br(),
+                                                              hr(),
+                                                              br(),
+                                                              tabPanel("Plot", plotOutput("PlotExpPois",
+                                                                                          height = "450px"))
+                                                            )
+                                                            
+                                                   ),
+                                                   tabPanel("Normale",
+                                                            
+                                                            sidebarPanel(
+                                                              p("La distribution Normale est une distribution définie sur l'ensemble des réels. Elle est en général
+                                                                  directement paramétrée par sa moyenne \\(\\mu\\) et son écart-type \\(\\sigma\\).",
+                                                                style="text-align:justify;color:black;font-size:18px"),
+                                                              br(),
+                                                              sliderInput("MuNorm",
+                                                                          "Moyenne \\(\\mu\\):",
+                                                                          value = 0,
+                                                                          min   = -15,
+                                                                          max   = +15,
+                                                                          step  = 0.1),
+                                                              sliderInput("SDNorm",
+                                                                          "Ecart-type \\(\\sigma\\):",
+                                                                          value = 1,
+                                                                          min   = 0.5,
+                                                                          max   = 10,
+                                                                          step  = 0.1),
+                                                              p("C'est une distribution symétrique (la moyenne et la médiane se condondent), qui joue un rôle très
+                                                              important en statistiques, du fait de ses nombreuses propriétés (qui ne seront pas détaillées ici). On peut ainsi démontrer (cf mémo 
+                                                                interne BEPS ou ouvrages de référence) que la somme de variables aléatoires distribuées
+                                                                normalement est une variable aléatoire dont la distribution est normale. Formellement cela s'écrit:",
+                                                                style="text-align:justify;color:black;font-size:18px"), 
+                                                              withMathJax(),
+                                                              p('$$
+                                                                    \\forall i \\in \\left[1,n\\right], X_i \\sim \\mathcal{N}\\left(\\mu_i, \\sigma_i\\right) \\\\
+                                                                    \\Rightarrow
+                                                                    Y = \\sum_{i=1}^n X_i \\sim \\mathcal{N}\\left(\\sum_{i=1}^n\\mu_i, \\sum_{i=1}^n\\sigma_i\\right)
+                                                                 $$',
+                                                                style="color:black;border:1px solid white;background-color:white;border-radius: 9px;font-size:18px"),
+                                                              p("La densité de probabilité s'écrit de la façon suivante:",
+                                                                style="text-align:justify;color:black;font-size:18px"),
+                                                              br(),
+                                                              withMathJax(),
+                                                              p('$$
+                                                                    X \\sim \\mathcal{N}\\left(\\mu, \\sigma\\right) \\qquad \\Leftrightarrow \\qquad f_X\\left(x\\right) = \\frac{1}{\\sigma\\sqrt{2\\pi}}e^{-\\frac{\\left(x-\\mu\\right)^2}{2\\sigma^2}}
+                                                                  $$',
+                                                                style="color:black;border:1px solid white;background-color:white;border-radius: 9px;font-size:18px")
+                                                            ),
+                                                            
+                                                            mainPanel(
+                                                              tabPanel("Plot", plotOutput("PlotNorm",
+                                                                                          height = "850px"))
+                                                            )
+                                                            
+                                                   ),
+                                                   tabPanel("Lognormale",
+                                                            
+                                                            
+                                                            sidebarPanel(
+                                                              p("La distribution LogNormale est une distribution définie sur l'ensemble des réels strictement positifs. Elle est en général
+                                                                  caractérisée par deux paramètres \\(\\mu_{SD}\\) et son écart-type \\(\\sigma_{SD}\\): il est important de ne pas confondre
+                                                                  ces paramètres avec la moyenne et l'écart-type de la distribution (voir bandeau inférieur pour une relation analytique entre
+                                                                ces différents paramètres). En fait, il existe une relation simple entre la médiane de \\(X\\) et le paramètre
+                                                                \\(\\mu_{SD}\\): \\(Med\\left(X\\right) = e^{\\mu_{SD}}\\). cette relation est importante dans la paramétrisation
+                                                                qui est traditionnellement retenue pour décrire la distribution de probabilité associée à l'alea sismique.",
+                                                                style="text-align:justify;color:black;font-size:18px"),
+                                                              br(),
+                                                              sliderInput("MuLNorm",
+                                                                          "Paramètre \\(\\mu_{LN}\\):",
+                                                                          value = 1,
+                                                                          min   = 0,
+                                                                          max   = 2,
+                                                                          step  = 0.1),
+                                                              sliderInput("SDLNorm",
+                                                                          "Paramètre \\(\\sigma_{LN}\\):",
+                                                                          value = 1,
+                                                                          min   = 0.5,
+                                                                          max   = 4,
+                                                                          step  = 0.1),
+                                                              p("Par définition, si le logarithme d'une variable aléatoire est distribué selon une loi Normale, alors cette variable aléatoire
+                                                              est distribuée selon une loi Log-Normale:",
+                                                                style="text-align:justify;color:black;font-size:18px"), 
+                                                              withMathJax(),
+                                                              p('$$
+                                                                    Y = \\log\\left(X\\right) \\sim \\mathcal{N}\\left(\\mu, \\sigma\\right) 
+                                                                  \\Leftrightarrow
+                                                                  X \\sim \\mathcal{LN}\\left(\\mu, \\sigma\\right)
+                                                                  $$',
+                                                                style="color:black;border:1px solid white;background-color:white;border-radius: 9px;font-size:18px"),
+                                                              p("A partir des propriétés élémentaires du logarithme et de la stabilité par sommation des variables
+                                                                Normales, on montre immédiatement que le produit de variables aléatoires LogNormales est une variable
+                                                                aléatoire LogNormale.",
+                                                                style="text-align:justify;color:black;font-size:18px"), 
+                                                              p("La densité de probabilité s'écrit de la façon suivante (on retrouve la structure de la loi Normale, au
+                                                                                                                         Jacobien du changement de variable près):",
+                                                                style="text-align:justify;color:black;font-size:18px"),
+                                                              withMathJax(),
+                                                              p('$$
+                                                                  X \\sim \\mathcal{LN}\\left(\\mu_{SD}, \\sigma_{SD}\\right) \\Leftrightarrow f_X\\left(x\\right) = \\frac{1}{x\\sigma_{SD}\\sqrt{2\\pi}}e^{-\\frac{\\left(\\log\\left(x\\right)-\\mu_{SD}\\right)^2}{2\\sigma_{SD}^2}} \\\\
+                                                                  \\longrightarrow \\left\\{ 
+                                                                      \\begin{aligned} 
+                                                                        \\mathbb{E}\\left[ X \\right] = e^{ \\mu_{SD}+\\sigma_{SD}^2/2}  \\\\
+                                                                        Var\\left( X \\right)         = e^{2\\mu_{SD}+\\sigma_{SD}^2} \\left( e^{\\sigma_{SD}^2}-1 \\right)
+                                                                      \\end{aligned}
+                                                                    \\right.
+                                                                $$',
+                                                                style="color:black;border:1px solid white;background-color:white;border-radius: 9px;font-size:18px"),
+                                                            ),
+                                                            
+                                                            mainPanel(
+                                                              tabPanel("Plot", plotOutput("PlotLNorm",
+                                                                                          height = "600px"))
+                                                            )
+                                                            
+                                                   ),
+                                                   tabPanel("Gamma",
+                                                            
+                                                            sidebarPanel(
+                                                              p("La distribution Gamma est une distribution définie sur l'ensemble des réels positifs.
+                                                                C'est une distribution intéressante pour l'inférence bayésienne (conjuguée de la loi de
+                                                                Poisson).",
+                                                                style="text-align:justify;color:black;font-size:18px"), 
+                                                              p("Plusieurs paramétrisations co-existent pour cette distribution, qui est caractérisée
+                                                                par deux paramètres. Ici nous retenons la paramétrisation de RiskSpectrum, dans laquelle
+                                                                deux paramètres de forme \\(\\alpha\\) et \\(\\beta\\). En fonction du calcul réalisé, du
+                                                                logiciel utilisé, etc., des choix différents pourront être rencontrés, et une vigilance
+                                                                est nécessaire pour éviter toute erreur d'interprétation.",
+                                                                br(),
+                                                                sliderInput("ShapeGamma",
+                                                                            "Paramètre de forme \\(\\alpha\\):",
+                                                                            value = 1,
+                                                                            min   = 0,
+                                                                            max   = 10,
+                                                                            step  = 0.1),
+                                                                sliderInput("RateGamma",
+                                                                            "Paramètre de forme \\(\\beta\\):",
+                                                                            value = 1,
+                                                                            min   = 0,
+                                                                            max   = 10,
+                                                                            step  = 0.1),
+                                                                style="text-align:justify;color:black;font-size:18px"),
+                                                              br(),
+                                                              withMathJax(),
+                                                              p('$$f_X\\left(x\\right) = 
+                                                                  \\frac{\\Gamma\\left(\\alpha + \\beta \\right)}{\\Gamma\\left(\\alpha \\right)\\Gamma\\left(\\beta \\right)} x^{\\alpha -1} \\left(1-x\\right)^{\\beta -1} \\\\
+                                                                \\longrightarrow \\left\\{ 
+                                                                  \\begin{aligned} 
+                                                                  \\mathbb{E}\\left[ X \\right] = \\frac{\\alpha}{\\alpha + \\beta}  \\\\
+                                                                  Var\\left( X \\right) = \\frac{\\alpha \\beta}{\\left(\\alpha + \\beta \\right)^2\\left(\\alpha + \\beta + 1 \\right)}
+                                                                  \\end{aligned}
+                                                                  \\right.
+                                                                  $$',
+                                                                style="color:black;border:1px solid white;background-color:white;border-radius: 9px;font-size:18px")),
+                                                            
+                                                            mainPanel(
+                                                              tabPanel("Plot", plotOutput("PlotGamma",
+                                                                                          height = "550px"))
+                                                            )
+                                                            
+                                                   ),
+                                                   tabPanel("\\(\\chi^2\\)",
+                                                            
+                                                            sidebarPanel(
+                                                              p("La distribution du Chi2 est une distribution définie sur l'ensemble des réels positifs.
+                                                                Elle est directement reliée à la distribution de Poisson, et elle permet de quantifier
+                                                                l'intervalle de confiance associé à l'estimation du paramètre \\(\\lambda\\) à partir
+                                                                du REX (voir mémo BEPS).",
+                                                                style="text-align:justify;color:black;font-size:18px"), 
+                                                              p("La base de la définition de la distribution du Chi2 est la suivante. Si \\(n\\) variables
+                                                                aléatoires sont distribuées selon des lois normales centrées réduites, alors la somme des
+                                                                carrés de ces variables aléatoires est distribuée selon une loi du Chi2 à n degrès de libertés:",
+                                                                style="text-align:justify;color:black;font-size:18px"), 
+                                                              withMathJax(),
+                                                              p('$$
+                                                                    \\forall i \\in \\left[1, n\\right], X_i \\sim \\mathcal{N} \\left(0, 1\\right)
+                                                                    \\Leftrightarrow
+                                                                    Y = \\sum_{i=1}^n X_i^2 \\sim \\chi^2_n
+                                                                 $$',
+                                                                style="color:black;border:1px solid white;background-color:white;border-radius: 9px;font-size:18px"),
+                                                              br(),
+                                                              sliderInput("KChi2",
+                                                                          "Nombre de degrés de liberté (n):",
+                                                                          value = 1,
+                                                                          min   = 1,
+                                                                          max   = 10,
+                                                                          step  = 0.5),
+                                                              br(),
+                                                              withMathJax(),
+                                                              p('$$X \\sim \\chi^2_n \\Leftrightarrow f_X\\left(x\\right) = 
+                                                                  \\frac{1}{\\Gamma\\left( n/2 \\right) 2^{n/2}} x^{n/2 -1} e^{-x/2} \\\\
+                                                                \\longrightarrow \\left\\{ 
+                                                                  \\begin{aligned} 
+                                                                  \\mathbb{E}\\left[ X \\right] = n  \\\\
+                                                                  Var\\left( X \\right) = 2n
+                                                                  \\end{aligned}
+                                                                  \\right.
+                                                                  $$',
+                                                                style="color:black;border:1px solid white;background-color:white;border-radius: 9px;font-size:18px"), 
+                                                              p("En réalité, la valeur de n n'est pas forcément entière: l'expression analytique de la densité de probabilité
+                                                                est compatible avec cette généralisation.",
+                                                                style="text-align:justify;color:black;font-size:18px")),
+                                                            
+                                                            mainPanel(
+                                                              tabPanel("Plot", plotOutput("PlotChi2",
+                                                                                          height = "550px"))
+                                                            )
+                                                            
+                                                   )
                                                  )
-                                        ),
-                                        tabPanel("...superposées (lois continues)")
-                                        ),
+                                        )
+                             ),
                              tabPanel("Le théorème central limite",
                                       fluidRow(column(width=1, icon("hand-point-right","fa-5x"),align="center"),
                                                column(
@@ -984,14 +1279,44 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                                                column(width=1, icon("hand-point-left","fa-5x"),align="center")),
                                       fluidRow(column(width = 1),
                                                column(width=10,
-                                                      p("blablabla",
+                                                      p("Nous avons vu que la loi des grands nombres nous permettait d'estimer l'espérance d'une variable
+                                                        aléatoire à partir de la moyenne empirique des observations. Le théorème central limite permet d'être
+                                                        beaucoup plus précis, en exprimant non seulement l'erreur commise sur cette estimation en fonction du
+                                                        nombre d'observations, mais également en précisant la loi de distribution des moyennes empiriques.",
+                                                        style="text-align:justify;color:black;background-color:lightblue;font-size:18px"),
+                                                      p("Plus formellement: soit \\(\\left(X_n\\right)_{n\\geq 1}\\) une suite de variables aléatoires
+                                                        indépendantes, de même loi, et admettant une variance \\(\\sigma^2>0\\). Notons \\(m = \\mathbb{E}[X_1]\\)
+                                                        leur espérance. Alors, si on pose:",
+                                                        style="text-align:justify;color:black;background-color:lightblue;font-size:18px"),
+                                                      p('$$
+                                                          Y_n = \\frac{\\mu-m}{\\sigma/\\sqrt{n}}
+                                                         $$',
+                                                        style="color:black;border:1px solid white;background-color:white;border-radius: 9px;font-size:18px"),
+                                                      p("la suite \\(\\left(Y_n\\right)_{n\\geq 1}\\) converge en loi vers la loi normale centrée réduite:",
+                                                        style="text-align:justify;color:black;background-color:lightblue;font-size:18px"),
+                                                      p('$$
+                                                          Y_n \\xrightarrow{loi} \\mathcal{N}\\left(0,1\\right)
+                                                         $$',
+                                                        style="color:black;border:1px solid white;background-color:white;border-radius: 9px;font-size:18px"),
+                                                      p("Cette notion de convergence en loi est assez technique, mais au fond, on sent bien que la notion de
+                                                        distance entre deux lois de probabilité doit être plus complexe que lea distance élémentaire dans les
+                                                        espaces auxquels nous sommes habitués. En pratique, on peut simplement retenir que la distribution de
+                                                        la moyenne empirique ressemble de plus en plus à une loi normale centrée sur l'espérance de la loi
+                                                        sous-jacente, et dont la variance tend vers 0 en \\(1/sqrt{n}\\). L'expression précédente peut en effet
+                                                        s'écrire:",
+                                                        style="text-align:justify;color:black;background-color:lightblue;font-size:18px"),
+                                                      p('$$
+                                                          \\mu = \\frac{1}{n} \\sum_{i=1}^n X_i \\xrightarrow{loi} \\mathcal{N}\\left(m = \\mathbb{E}\\left(X_1\\right),\\frac{\\sigma}{\\sqrt{n}}\\right)
+                                                         $$',
+                                                        style="color:black;border:1px solid white;background-color:white;border-radius: 9px;font-size:18px"),
+                                                      p("Plutôt que de longs discours, nous pouvons essayer de voir comment ce théorème se comporte en pratique.",
                                                         style="text-align:justify;color:black;background-color:lightblue;font-size:18px"),
                                                       style="background-color:lightblue;border-radius: 10px")),
                                       br(),
                                       sidebarLayout(
                                         sidebarPanel(
                                           p("Ici, on se propose de choisir la distribution sous-jacente, son espérance et sa variance,
-                                            ainsi que le nombre de points dans l'échantillon et le nombre d'échantillons...",
+                                                                  ainsi que le nombre de points dans l'échantillon et le nombre d'échantillons...",
                                             style="text-align:justify;color:black;font-size:18px"),
                                           br(),
                                           radioButtons("dist", 
@@ -1028,7 +1353,74 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                                           tabPanel("Plot", plotOutput("TCL",
                                                                       height = "700px"))))),
                              navbarMenu("Modélisation",
-                                        tabPanel("Le maximum de vraisemblance"),
+                                        tabPanel("Le maximum de vraisemblance",
+                                                 fluidRow(column(width=1, icon("hand-point-right","fa-5x"),align="center"),
+                                                          column(
+                                                            h3(p(strong("Le maximum de vraisemblance"),style="color:black;text-align:center")),
+                                                            width=10,style="background-color:lightgrey;border-radius: 10px"),
+                                                          column(width=1, icon("hand-point-left","fa-5x"),align="center")
+                                                 ),
+                                                 fluidRow(column(width = 1),
+                                                          column(width=10,
+                                                                 p("Lorsque l'on cherche à modéliser une variable aléatoire quelconque à partir du REX, le plus
+                                                                   simple consiste à calculer les caractéristiques empiriques des observations (moyenne, variance, etc.).
+                                                                   Des tests plus ou moins sophistiqués permettent de déterminer si les observations sont suffisantes
+                                                                   pour conclure à l'évolution ou au contraire au maintien des performances de l'installation ou du système
+                                                                   (dans une étude de fiabilité), par exemple.",
+                                                                   style="text-align:justify;color:black;background-color:lightblue;font-size:18px"),
+                                                                 p("Mais au fond, nous n'avons pas encore vraiment vu comment évaluer, à partir de ces données
+                                                                   empiriques, les caractéristiques des lois de distribution. Insistons sur un point: la première
+                                                                   chose à faire avant d'évaluer les paramètres de la loi de distribution, c'est de choisir la loi
+                                                                   de distribution. Il s'agit d'une étape essentielle de la modélisation statistique, souvent
+                                                                   guidée par le bon sens, le jugement d'expert, ou éventuellement par des arguments plus profonds.",
+                                                                   style="text-align:justify;color:black;background-color:lightblue;font-size:18px"),
+                                                                 p("On appelle `Vraisemblance` la distribution de probabilité des données, que l'on cherche à caractériser.
+                                                                   Dans le cadre d'une approche fréquentiste, n considère que les données observées sont les réalisations les
+                                                                   plus probables de la variable aléatoire caractérisée par la vraisemblance. On cherche donc le jeu de
+                                                                   paramètres de la loi qui maximise la probabilité des données observées. On peut essayer de le faire à
+                                                                   la main pour un cas simple, dans lequel on cherche à caractériser le taux de défaillance d'un système
+                                                                   pour lequel on a observé n défaillances sur les 5 dernières années. On choisit une vraisemblance de Poisson, dont
+                                                                   le seul paramètre ajustable (puisque le temps de scrutation est connu) est le taux de défaillance
+                                                                   \\(\\lambda\\).",
+                                                                   style="text-align:justify;color:black;background-color:lightblue;font-size:18px"),
+                                                                 style="background-color:lightblue;border-radius: 10px")),
+                                                 br(),
+                                                 sidebarLayout(
+                                                   sidebarPanel(
+                                                     p("On choisit le nombre de défaillances observées sur les 5 dernières années, et on ajuste le taux
+                                                       de défaillance pour que le maximum de la distribution de Poisson
+                                                       coïncide avec le nombre de défaillances observées.",
+                                                       style="text-align:justify;color:black;font-size:18px"),
+                                                     br(),
+                                                     sliderInput("NMaxVrais",
+                                                                 "Nombre de défaillances:",
+                                                                 value = 5,
+                                                                 min   = 0,
+                                                                 max   = 10,
+                                                                 step  = 1),
+                                                     br(),
+                                                     sliderInput("LambdaMaxVrais",
+                                                                 "Taux de défaillance \\(\\lambda\\):",
+                                                                 value = .5,
+                                                                 min   = 0,
+                                                                 max   = 10,
+                                                                 step  = 0.01),
+                                                     p("Evidemment on ne procède pas au hasard en pratique. La maximisation de la vraisemblance passe tout
+                                                       simplement par la recherche du maximum de la distribution de probabilité, en fonction du paramètre 
+                                                       \\(\\lambda\\). Et pour simplifier encore davantage, on maximise la log-vraisemblance:",
+                                                       style="text-align:justify;color:black;font-size:18px"),
+                                                     p('$$
+                                                          \\frac{\\partial}{\\partial \\lambda} \\log \\left( \\frac{e^{-\\lambda T} \\left(\\lambda T\\right)^x}{x!} \\right) 
+                                                          \\Leftrightarrow
+                                                          \\lambda = \\frac{x}{T}
+                                                         $$',
+                                                       style="color:black;border:1px solid white;background-color:white;border-radius: 9px;font-size:18px"),
+                                                   ),
+                                                   mainPanel(
+                                                     tabPanel("Plot", plotOutput("PlotMaxVrais",
+                                                                                 height = "700px"))))
+                                                 
+                                        ),
                                         tabPanel("Régression linéaire",
                                                  fluidRow(column(tags$img(src = "WIP.png", width = "100px"),
                                                                  width = 1,
@@ -1050,7 +1442,38 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                                                column(
                                                  h3(p(strong("Quelques références et liens utiles..."),style="color:black;text-align:center")),
                                                  width=10,style="background-color:lightgrey;border-radius: 10px"),
-                                               column(width=1, icon("book","fa-5x"),align="center"))
+                                               column(width=1, icon("book","fa-5x"),align="center")),
+                                      br(),
+                                      br(),
+                                      p(em("Les questions les plus importantes de la vie ne sont, pour la plupart, que des problèmes de probabilité (Pierre Simon de Laplace)"),
+                                        style="text-align:center;color:darkgrey;background-color:white;font-size:28px"),
+                                      br(),
+                                      br(),
+                                      fluidRow(column(width = 1),
+                                               column(width=10,
+                                                      p("De très nombreux ouvrages existent: j'en ai acheté quelques uns, à votre disposition pour les consulter!",
+                                                        style="text-align:justify;color:black;background-color:lightblue;font-size:18px"),
+                                                      p("Quelques ouvrages intéressants:",
+                                                        tags$ul(
+                                                          tags$li("Probabilités pour les non-probabilistes - Walter Appel (H&K éditions) - 38,90€: comme son nom ne 
+                                                                  l'indique pas, plutôt très technique et mathématique!"),
+                                                          tags$li("Introduction to robability - Dimitri P. Nertsekas & John N. Tsitsiklis (Athena Scientific) - ~110€: 
+                                                                  nettement plus abordable!"),
+                                                          tags$li("All of statistics - A concise course in statistical inference - Larry Wasserman (Springer) - ~80€: 
+                                                                  très complet, beaucoup plus nettement orienté vers les statistiques")),
+                                                        style="text-align:justify;color:black;background-color:lightblue;font-size:18px"),
+                                                      p("Plus spécifiquement sur R:",
+                                                        tags$ul(
+                                                          tags$li("R pour la statistique et la science des données - Sous la direction de François Husson (Presses universitaires de Rennes) - 25€"),
+                                                          tags$li("The R book - Michael J. Crawley (Wiley) - 70€"),
+                                                          tags$li("Initiation à la statistique avec R - Cours et exercices corrigés - Frédéric Bertrand & Myriam Maumy-Bertrand (Dunod) - 29,90€: en
+                                                                  fait j'ai commencé avec ce livre 6 mois après mon arrivée au BEPS...")),
+                                                        style="text-align:justify;color:black;background-color:lightblue;font-size:18px"),
+                                                      p("Internet:",
+                                                        tags$ul(
+                                                          tags$li(a(href="https://ben-lambert.com/about/", "Le blog de Ben Lambert",target="_blank"))),
+                                                        style="text-align:justify;color:black;background-color:lightblue;font-size:18px"),
+                                                      style="background-color:lightblue;border-radius: 10px"))
                              ))
                   
 ))
