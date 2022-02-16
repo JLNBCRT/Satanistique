@@ -1411,8 +1411,16 @@ shinyServer(function(input, output) {
       geom_line(aes(x = l, y = vrais,      color = "Vrais"),    size = 1, show.legend = F) +
       #geom_line(aes(x = l, y = log(vrais), color = "LogVrais"), size = 1, show.legend = F) +
       geom_vline(aes(xintercept = VariableLambdaMaxVrais()), color = "red", linetype = "dashed", size = 1) +
+      geom_area(data = df2[df2$l<qchisq(0.975, df=2*VariableNMaxVrais()+2)/2 &
+                             df2$l>qchisq(0.025, df=2*VariableNMaxVrais())/2,], aes(x = l, y = vrais), fill = "green", alpha = 0.25, size = 1.5) +
       xlab(TeX("$\\lambda$")) +
       ylab("Vraisemblance") +
+      annotate(geom  = "text",
+               x     = df2[df2$vrais == max(df2$vrais),1],
+               y     = 0.1,
+               label = "95%", 
+               color = "green",
+               size  = 10) +
       scale_color_manual(name = "",
                          values = c("Vrais" = "blue",
                                     "LogVrais" = "orange")) +
