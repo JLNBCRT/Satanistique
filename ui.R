@@ -6,6 +6,7 @@ library(ggpubr)
 library(mvtnorm)
 library(ggExtra)
 library(plot3D)
+library(cowplot)
 
 # Define UI for application that draws a histogram
 shinyUI(fluidPage(theme = shinytheme("cerulean"),
@@ -37,7 +38,7 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                                         style="text-align:center;color:darkgrey;background-color:white;font-size:28px"),
                                       br(),
                                       br(),
-                                      fluidRow(column(tags$img(src = "014-06-19-8-statistique-humour.jpg", width = "600px"),
+                                      fluidRow(column(tags$img(src = "014-06-19-8-statistique-humour.jpg", width = "100%"),
                                                       width = 4,
                                                       style="display: block; margin-left: auto; margin-right: auto"),
                                                column(
@@ -67,14 +68,14 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                                                    style="text-align:center;color:black;font-size:16px"),
                                                  br(),
                                                  tags$img(src="Rlogo.png", 
-                                                          width = "150px",
+                                                          width = "50%",
                                                           style="display: block; margin-left: auto; margin-right: auto"),
                                                  br(),
                                                  p("Pour davantage de précisions sur",em("Shiny"),"cliquez",
                                                    a(href="https://shiny.rstudio.com/", "ici",target="_blank"),
                                                    style="text-align:center;color:black;font-size:16px"),
                                                  tags$img(src="shiny-og-fb.jpg", 
-                                                          width = "200px",
+                                                          width = "50%",
                                                           style="display: block; margin-left: auto; margin-right: auto"),
                                                  width=2)),
                                       hr(),
@@ -93,7 +94,7 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                                                                     le recours à un formalisme relativement sophistiqué. Prenons plutôt un exemple.",
                                                                    style="text-align:justify;color:black;background-color:lightblue;font-size:18px"),
                                                                  br(),
-                                                                 tags$img(src = "OnceUponATime.jpg", width = "600px"),
+                                                                 tags$img(src = "OnceUponATime.jpg", width = "40%"),
                                                                  br(),
                                                                  br(),
                                                                  withMathJax(),
@@ -174,9 +175,6 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                                                    sidebarPanel(
                                                      p("Essayons: ici, on choisit le nombre de réalisation d'une variable aléatoire X, ainsi que le nombre d'intervalles utilisés pour construire l'histogramme:",
                                                        style="text-align:justify;color:black;font-size:18px"),
-                                                     # radioButtons("HistPanel_Dist", "",
-                                                     #              c("Uniforme" = "unif",
-                                                     #                "Normale"  = "norm")),
                                                      sliderInput("HistPanel_Nobs",
                                                                  "Nombre d'observations:",
                                                                  value = 250,
@@ -1379,7 +1377,7 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                                                                    plus probables de la variable aléatoire caractérisée par la vraisemblance. On cherche donc le jeu de
                                                                    paramètres de la loi qui maximise la probabilité des données observées. On peut essayer de le faire à
                                                                    la main pour un cas simple, dans lequel on cherche à caractériser le taux de défaillance d'un système
-                                                                   pour lequel on a observé n défaillances sur les 5 dernières années. On choisit une vraisemblance de Poisson, dont
+                                                                   pour lequel on a observé n défaillances sur la dernière année (\\(T=1\\)). On choisit une vraisemblance de Poisson, dont
                                                                    le seul paramètre ajustable (puisque le temps de scrutation est connu) est le taux de défaillance
                                                                    \\(\\lambda\\).",
                                                                    style="text-align:justify;color:black;background-color:lightblue;font-size:18px"),
@@ -1387,7 +1385,7 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                                                  br(),
                                                  sidebarLayout(
                                                    sidebarPanel(
-                                                     p("On choisit le nombre de défaillances observées sur les 5 dernières années, et on ajuste le taux
+                                                     p("On choisit le nombre de défaillances observées sur la dernière année, et on ajuste le taux
                                                        de défaillance pour que le maximum de la distribution de Poisson
                                                        coïncide avec le nombre de défaillances observées.",
                                                        style="text-align:justify;color:black;font-size:18px"),
@@ -1396,14 +1394,14 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                                                                  "Nombre de défaillances:",
                                                                  value = 5,
                                                                  min   = 0,
-                                                                 max   = 10,
+                                                                 max   = 9,
                                                                  step  = 1),
                                                      br(),
                                                      sliderInput("LambdaMaxVrais",
                                                                  "Taux de défaillance \\(\\lambda\\):",
                                                                  value = .5,
                                                                  min   = 0,
-                                                                 max   = 10,
+                                                                 max   = 9,
                                                                  step  = 0.01),
                                                      p("Evidemment on ne procède pas au hasard en pratique. La maximisation de la vraisemblance passe tout
                                                        simplement par la recherche du maximum de la distribution de probabilité, en fonction du paramètre 
@@ -1457,7 +1455,7 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                                                         tags$ul(
                                                           tags$li("Probabilités pour les non-probabilistes - Walter Appel (H&K éditions) - 38,90€: comme son nom ne 
                                                                   l'indique pas, plutôt très technique et mathématique!"),
-                                                          tags$li("Introduction to robability - Dimitri P. Nertsekas & John N. Tsitsiklis (Athena Scientific) - ~110€: 
+                                                          tags$li("Introduction to probability - Dimitri P. Nertsekas & John N. Tsitsiklis (Athena Scientific) - ~110€: 
                                                                   nettement plus abordable!"),
                                                           tags$li("All of statistics - A concise course in statistical inference - Larry Wasserman (Springer) - ~80€: 
                                                                   très complet, beaucoup plus nettement orienté vers les statistiques")),

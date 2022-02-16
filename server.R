@@ -6,6 +6,7 @@ library(ggpubr)
 library(mvtnorm)
 library(ggExtra)
 library(plot3D)
+library(cowplot)
 
 source("Functions.R")
 
@@ -1381,9 +1382,9 @@ shinyServer(function(input, output) {
     output$PlotMaxVrais <- renderPlot({
     
     tmp <- 0:20
-    df <- data.frame(x = tmp, y = dpois(tmp, lambda = VariableLambdaMaxVrais()*5))
+    df <- data.frame(x = tmp, y = dpois(tmp, lambda = VariableLambdaMaxVrais()))
     
-    ggplot(df) + 
+    g <- ggplot(df) + 
       geom_bar(data = df[df$y!=max(df$y),], aes(x=x, y=y), stat = "identity", fill = "blue", alpha = 0.5) + 
       geom_bar(data = df[df$y==max(df$y),], aes(x=x, y=y), stat = "identity", fill = "red",  alpha = 0.5) +
       geom_point(aes(x = VariableNMaxVrais(), y = 0), size = 5, color = "green") +
@@ -1401,6 +1402,48 @@ shinyServer(function(input, output) {
             axis.title.y = element_text(size = 20),
             legend.text  = element_text(size = 18),
             legend.position = "top")
+    
+    l <- seq(0, 9, by = 0.01)
+    
+    df2 <- data.frame(l = l, vrais = dpois(x = VariableNMaxVrais(), lambda = l))
+    
+    h <- ggplot(df2) +
+      geom_line(aes(x = l, y = vrais,      color = "Vrais"),    size = 1, show.legend = F) +
+      #geom_line(aes(x = l, y = log(vrais), color = "LogVrais"), size = 1, show.legend = F) +
+      geom_vline(aes(xintercept = VariableLambdaMaxVrais()), color = "red", linetype = "dashed", size = 1) +
+      xlab(TeX("$\\lambda$")) +
+      ylab("Vraisemblance") +
+      scale_color_manual(name = "",
+                         values = c("Vrais" = "blue",
+                                    "LogVrais" = "orange")) +
+      theme_bw() +
+      theme(axis.text.x  = element_text(size = 16),
+            axis.text.y  = element_text(size = 16),
+            axis.title.x = element_text(size = 20),
+            axis.title.y = element_text(size = 20),
+            legend.text  = element_text(size = 18),
+            legend.position = "right")
+    
+    i <- ggplot(df2) +
+      #geom_line(aes(x = l, y = vrais,      color = "Vrais"),    size = 1, show.legend = F) +
+      geom_line(aes(x = l, y = log(vrais), color = "LogVrais"), size = 1, show.legend = F) +
+      geom_vline(aes(xintercept = VariableLambdaMaxVrais()), color = "red", linetype = "dashed", size = 1) +
+      xlab(TeX("$\\lambda$")) +
+      ylab("Log-Vraisemblance") +
+      ylim(c(-4,0)) +
+      scale_color_manual(name = "",
+                         values = c("Vrais" = "blue",
+                                    "LogVrais" = "orange")) +
+      theme_bw() +
+      theme(axis.text.x  = element_text(size = 16),
+            axis.text.y  = element_text(size = 16),
+            axis.title.x = element_text(size = 20),
+            axis.title.y = element_text(size = 20),
+            legend.text  = element_text(size = 18),
+            legend.position = "right")
+    
+    plot_grid(g, plot_grid(h, i, nrow = 2, align = "hv"), 
+              ncol = 2, align = "v", axis = "b")
     
   })
   
