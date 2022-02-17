@@ -571,7 +571,7 @@ shinyServer(function(input, output) {
     Sigma[2,1] <- VariableCorValue()*sqrt(VariableCorX2()^2* VariableCorY2()^2)
     df3        <- as.data.frame(rmvnorm(nsample, mean = c(0, 0), sigma = Sigma))
     
-    cor_txt <- paste0("Le coefficient de corrélation vaut: ", round(cor(df3)[1,2],3), " (théorie: ", round(Sigma[1,2]/sqrt(Sigma[1,1]*Sigma[2,2]),3), ")")
+    cor_txt <- paste0("Le coefficient de corrélation vaut: ", round(cor(df3)[1,2],3), " (théorie: ", VariableCorValue(), ")")
     cor_txt
     
   })
