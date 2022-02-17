@@ -729,6 +729,14 @@ shinyServer(function(input, output) {
                             fun = dist) - VariableTCLmean())/(VariableTCLsd()/sqrt(VariableTCLNsample())))
     names(df) <- "Xred"
     
+    df2 <- data.frame(apply(ns, 
+                            FUN = TCL, 
+                            MARGIN = 1, 
+                            E = VariableTCLmean(), 
+                            SD = VariableTCLsd(), 
+                            fun = dist))
+    names(df2) <- "X"
+    
     g <- ggplot(data) +
       geom_histogram(aes(x = distrib, y = ..density..), alpha = 0.2, show.legend = F, bins = 30, center = -1) +
       xlab("Variable aléatoire (un échantillon)") +
@@ -764,7 +772,36 @@ shinyServer(function(input, output) {
             axis.title.y = element_text(size = 20),
             legend.text  = element_text(size = 16))   
     
-    ggarrange(g, h, i, ncol = 3, align = "hv")
+    j <- ggplot(df2) +
+      geom_histogram(aes(x = X, y = ..density..), alpha = 0.2, show.legend = F, bins = 30, center = -1) +
+      stat_function(fun = dnorm, color = "orange", size = 1.2, 
+                    args = list(mean = VariableTCLmean(), sd = VariableTCLsd()/sqrt(VariableTCLNsample()))) +
+      xlab("Variable aléatoire") +
+      ylab("Densité de probabilité") +
+      theme_bw() +
+      theme(axis.text.x  = element_text(size = 16),
+            axis.text.y  = element_text(size = 16),
+            axis.title.x = element_text(size = 20),
+            axis.title.y = element_text(size = 20),
+            legend.text  = element_text(size = 16))
+    
+    k <- ggplot(df2) +
+      stat_ecdf(aes(x = X), size = 1.2, show.legend = F, bins = 30, center = -1) +
+      stat_function(fun = pnorm, color = "orange", size = 1.2, 
+                    args = list(mean = VariableTCLmean(), sd = VariableTCLsd()/sqrt(VariableTCLNsample()))) +
+      xlab("Variable aléatoire") +
+      ylab("Fonction de répartition") +
+      theme_bw() +
+      theme(axis.text.x  = element_text(size = 16),
+            axis.text.y  = element_text(size = 16),
+            axis.title.x = element_text(size = 20),
+            axis.title.y = element_text(size = 20),
+            legend.text  = element_text(size = 16))   
+    
+    plot_grid(g, 
+              plot_grid(h, j, ncol = 1, nrow = 2, align = "v", axis = "b"),
+              plot_grid(i, k, ncol = 1, nrow = 2, align = "v", axis = "b"), 
+              ncol = 3, align = "v", axis = "b")
     
   })
   

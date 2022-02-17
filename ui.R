@@ -1297,7 +1297,7 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                                                          $$',
                                                         style="color:black;border:1px solid white;background-color:white;border-radius: 9px;font-size:18px"),
                                                       p("Cette notion de convergence en loi est assez technique, mais au fond, on sent bien que la notion de
-                                                        distance entre deux lois de probabilité doit être plus complexe que lea distance élémentaire dans les
+                                                        distance entre deux lois de probabilité doit être plus complexe que la distance élémentaire dans les
                                                         espaces auxquels nous sommes habitués. En pratique, on peut simplement retenir que la distribution de
                                                         la moyenne empirique ressemble de plus en plus à une loi normale centrée sur l'espérance de la loi
                                                         sous-jacente, et dont la variance tend vers 0 en \\(1/sqrt{n}\\). L'expression précédente peut en effet
@@ -1329,7 +1329,7 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                                                       max   = 10,
                                                       step  = 0.5),
                                           sliderInput("TCLsdPanel",
-                                                      "Variance de la variable aléatoire:",
+                                                      "Ecrt-type de la variable aléatoire:",
                                                       value = 1,
                                                       min   = 1,
                                                       max   = 5,
@@ -1456,7 +1456,7 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                                                           tags$li("Probabilités pour les non-probabilistes - Walter Appel (H&K éditions) - 38,90€: comme son nom ne 
                                                                   l'indique pas, plutôt très technique et mathématique!"),
                                                           tags$li("Introduction to probability - Dimitri P. Nertsekas & John N. Tsitsiklis (Athena Scientific) - ~110€: 
-                                                                  nettement plus abordable!"),
+                                                                  nettement plus abordable (financièrement, ça se discute)!"),
                                                           tags$li("All of statistics - A concise course in statistical inference - Larry Wasserman (Springer) - ~80€: 
                                                                   très complet, beaucoup plus nettement orienté vers les statistiques")),
                                                         style="text-align:justify;color:black;background-color:lightblue;font-size:18px"),
@@ -1469,7 +1469,12 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                                                         style="text-align:justify;color:black;background-color:lightblue;font-size:18px"),
                                                       p("Internet:",
                                                         tags$ul(
-                                                          tags$li(a(href="https://ben-lambert.com/about/", "Le blog de Ben Lambert",target="_blank"))),
+                                                          tags$li(a(href="https://ben-lambert.com/about/", "Le blog de Ben Lambert",target="_blank")),
+                                                          tags$li(a(href="https://www.sfds.asso.fr/", "La Société Française de Statistique",target="_blank"))),
+                                                        style="text-align:justify;color:black;background-color:lightblue;font-size:18px"),
+                                                      p("Articles:",
+                                                        tags$ul(
+                                                          tags$li("Univariate distribution relationships - Lawrence M. Leemis & Jacquelyn T. McQueston, The American statistician, February 2008, Vol. 62, No. 1")),
                                                         style="text-align:justify;color:black;background-color:lightblue;font-size:18px"),
                                                       style="background-color:lightblue;border-radius: 10px"))
                              ))
